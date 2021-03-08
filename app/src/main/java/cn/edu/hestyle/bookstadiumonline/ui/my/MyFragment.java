@@ -1,5 +1,6 @@
 package cn.edu.hestyle.bookstadiumonline.ui.my;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+
+import cn.edu.hestyle.bookstadiumonline.LoginActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 
 public class MyFragment extends Fragment {
@@ -21,6 +24,15 @@ public class MyFragment extends Fragment {
         this.rootView = inflater.inflate(R.layout.fragment_my, container, false);
         // 设置navigationBar
         this.navigationBarInit();
+        // 设置"去登录"点击事件
+        TextView titleTextView = this.rootView.findViewById(R.id.gotoLoginTextView);
+        titleTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return this.rootView;
     }
@@ -29,7 +41,7 @@ public class MyFragment extends Fragment {
      * 设置navigationBar
      */
     private void navigationBarInit() {
-        ConstraintLayout commonTitleConstraintLayout = this.rootView.findViewById(R.id.include_common_navigation_bar);
+        ConstraintLayout commonTitleConstraintLayout = this.rootView.findViewById(R.id.my_fragment_navigation_bar);
         // 设置title
         TextView titleTextView = this.rootView.findViewById(R.id.titleTextView);
         titleTextView.setText("我的");
@@ -39,9 +51,9 @@ public class MyFragment extends Fragment {
         leftSettingImageButton.setImageResource(R.drawable.ic_setting_24dp);
         ConstraintLayout.LayoutParams leftSettingLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
         leftSettingLayoutParams.leftMargin = 15;
-        leftSettingLayoutParams.startToStart = R.id.include_common_navigation_bar;
-        leftSettingLayoutParams.topToTop = R.id.include_common_navigation_bar;
-        leftSettingLayoutParams.bottomToBottom = R.id.include_common_navigation_bar;
+        leftSettingLayoutParams.startToStart = R.id.my_fragment_navigation_bar;
+        leftSettingLayoutParams.topToTop = R.id.my_fragment_navigation_bar;
+        leftSettingLayoutParams.bottomToBottom = R.id.my_fragment_navigation_bar;
         leftSettingImageButton.setLayoutParams(leftSettingLayoutParams);
         // 设置right announcement
         ImageButton rightAnnouncementImageButton = new ImageButton(getActivity());
@@ -49,9 +61,9 @@ public class MyFragment extends Fragment {
         rightAnnouncementImageButton.setImageResource(R.drawable.ic_announcement_24dp);
         ConstraintLayout.LayoutParams rightAnnouncementLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
         rightAnnouncementLayoutParams.rightMargin = 15;
-        rightAnnouncementLayoutParams.endToEnd = R.id.include_common_navigation_bar;
-        rightAnnouncementLayoutParams.topToTop = R.id.include_common_navigation_bar;
-        rightAnnouncementLayoutParams.bottomToBottom = R.id.include_common_navigation_bar;
+        rightAnnouncementLayoutParams.endToEnd = R.id.my_fragment_navigation_bar;
+        rightAnnouncementLayoutParams.topToTop = R.id.my_fragment_navigation_bar;
+        rightAnnouncementLayoutParams.bottomToBottom = R.id.my_fragment_navigation_bar;
         rightAnnouncementImageButton.setLayoutParams(rightAnnouncementLayoutParams);
         // 添加到common_title
         commonTitleConstraintLayout.addView(leftSettingImageButton);
