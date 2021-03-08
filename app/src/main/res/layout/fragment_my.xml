@@ -7,7 +7,7 @@
     tools:context=".ui.my.MyFragment">
 
     <include
-        android:id="@+id/include_common_navigation_bar"
+        android:id="@+id/my_fragment_navigation_bar"
         layout="@layout/include_common_navigation_bar" />
 
     <ScrollView
@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include_common_navigation_bar"
+        app:layout_constraintTop_toBottomOf="@+id/my_fragment_navigation_bar"
         android:layout_height="0dp"
         android:background="#e6e6e6">
 
