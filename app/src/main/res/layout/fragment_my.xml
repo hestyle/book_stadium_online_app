@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.my.MyFragment">
 
+    <include layout="@layout/include_common_navigation_bar"/>
+
     <TextView
         android:id="@+id/text_my"
         android:layout_width="match_parent"
