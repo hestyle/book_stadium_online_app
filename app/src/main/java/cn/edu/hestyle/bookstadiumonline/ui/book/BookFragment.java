@@ -17,6 +17,8 @@ public class BookFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_book, container, false);
         TextView textView = root.findViewById(R.id.text_book);
         textView.setText("book");
+        TextView titleTextView = root.findViewById(R.id.titleTextView);
+        titleTextView.setText("预约");
         return root;
     }
 }
