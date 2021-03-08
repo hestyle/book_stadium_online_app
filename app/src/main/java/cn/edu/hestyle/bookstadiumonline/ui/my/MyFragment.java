@@ -22,8 +22,6 @@ public class MyFragment extends Fragment {
         // 设置navigationBar
         this.navigationBarInit();
 
-        TextView textView = this.rootView.findViewById(R.id.text_my);
-        textView.setText("my");
         return this.rootView;
     }
 
@@ -31,7 +29,7 @@ public class MyFragment extends Fragment {
      * 设置navigationBar
      */
     private void navigationBarInit() {
-        ConstraintLayout commonTitleConstraintLayout = this.rootView.findViewById(R.id.common_navigation_bar);
+        ConstraintLayout commonTitleConstraintLayout = this.rootView.findViewById(R.id.include_common_navigation_bar);
         // 设置title
         TextView titleTextView = this.rootView.findViewById(R.id.titleTextView);
         titleTextView.setText("我的");
@@ -41,9 +39,9 @@ public class MyFragment extends Fragment {
         leftSettingImageButton.setImageResource(R.drawable.ic_setting_24dp);
         ConstraintLayout.LayoutParams leftSettingLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
         leftSettingLayoutParams.leftMargin = 15;
-        leftSettingLayoutParams.startToStart = R.id.common_navigation_bar;
-        leftSettingLayoutParams.topToTop = R.id.common_navigation_bar;
-        leftSettingLayoutParams.bottomToBottom = R.id.common_navigation_bar;
+        leftSettingLayoutParams.startToStart = R.id.include_common_navigation_bar;
+        leftSettingLayoutParams.topToTop = R.id.include_common_navigation_bar;
+        leftSettingLayoutParams.bottomToBottom = R.id.include_common_navigation_bar;
         leftSettingImageButton.setLayoutParams(leftSettingLayoutParams);
         // 设置right announcement
         ImageButton rightAnnouncementImageButton = new ImageButton(getActivity());
@@ -51,9 +49,9 @@ public class MyFragment extends Fragment {
         rightAnnouncementImageButton.setImageResource(R.drawable.ic_announcement_24dp);
         ConstraintLayout.LayoutParams rightAnnouncementLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
         rightAnnouncementLayoutParams.rightMargin = 15;
-        rightAnnouncementLayoutParams.endToEnd = R.id.common_navigation_bar;
-        rightAnnouncementLayoutParams.topToTop = R.id.common_navigation_bar;
-        rightAnnouncementLayoutParams.bottomToBottom = R.id.common_navigation_bar;
+        rightAnnouncementLayoutParams.endToEnd = R.id.include_common_navigation_bar;
+        rightAnnouncementLayoutParams.topToTop = R.id.include_common_navigation_bar;
+        rightAnnouncementLayoutParams.bottomToBottom = R.id.include_common_navigation_bar;
         rightAnnouncementImageButton.setLayoutParams(rightAnnouncementLayoutParams);
         // 添加到common_title
         commonTitleConstraintLayout.addView(leftSettingImageButton);
