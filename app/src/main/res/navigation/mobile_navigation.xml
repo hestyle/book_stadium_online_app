@@ -3,23 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_book">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="cn.edu.hestyle.bookstadiumonline.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_book"
+        android:name="cn.edu.hestyle.bookstadiumonline.ui.book.BookFragment"
+        android:label="@string/title_book"
+        tools:layout="@layout/fragment_book" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="cn.edu.hestyle.bookstadiumonline.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_moment"
+        android:name="cn.edu.hestyle.bookstadiumonline.ui.moment.MomentFragment"
+        android:label="@string/title_moment"
+        tools:layout="@layout/fragment_moment" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="cn.edu.hestyle.bookstadiumonline.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_message"
+        android:name="cn.edu.hestyle.bookstadiumonline.ui.message.MessageFragment"
+        android:label="@string/title_message"
+        tools:layout="@layout/fragment_message" />
+
+    <fragment
+        android:id="@+id/navigation_my"
+        android:name="cn.edu.hestyle.bookstadiumonline.ui.my.MyFragment"
+        android:label="@string/title_my"
+        tools:layout="@layout/fragment_my" />
+
 </navigation>
