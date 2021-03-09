@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">book_stadium_online_app</string>
+    <string name="app_name">在线预约场馆</string>
     <string name="title_book">预约</string>
     <string name="title_moment">动态</string>
     <string name="title_message">消息</string>

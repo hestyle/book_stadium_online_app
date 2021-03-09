@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
-    <include android:id="@+id/logo_activity_navigation_bar" layout="@layout/include_back_navigation_bar"/>
+    <include android:id="@+id/login_activity_navigation_bar" layout="@layout/include_back_navigation_bar"/>
 
     <ImageView
         android:id="@+id/logoImageView"
@@ -14,7 +14,7 @@
         android:layout_height="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_activity_navigation_bar"
+        app:layout_constraintTop_toBottomOf="@+id/login_activity_navigation_bar"
         android:layout_marginTop="40dp"
         android:src="@drawable/logo" />
 
@@ -32,7 +32,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/border">
 
             <TextView
                 android:layout_width="80dp"
@@ -43,12 +44,11 @@
                 android:textSize="18sp"/>
 
             <EditText
-                android:id="@+id/userNameEditText"
+                android:id="@+id/usernameEditText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:layout_gravity="center_vertical"
-                android:ems="10"
                 android:inputType="textPersonName"
                 android:hint="请输入用户名"
                 android:text="" />
@@ -56,7 +56,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/border">
 
             <TextView
                 android:layout_width="80dp"
@@ -71,7 +72,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:layout_gravity="center_vertical"
-                android:ems="10"
                 android:inputType="textPassword"
                 android:hint="请输入密码"
                 android:text="" />
@@ -81,21 +81,24 @@
             android:layout_height="50dp"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/registerButton"
+            <TextView
+                android:id="@+id/registerTextView"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="100dp"
+                android:text="去注册"
+                android:textColor="#0000FF"
+                android:textSize="18sp"/>
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:layout_marginRight="50dp"
-                android:text="注册" />
-            <Button
-                android:id="@+id/loginButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:layout_marginLeft="50dp"
                 android:text="登录" />
         </LinearLayout>
     </LinearLayout>
