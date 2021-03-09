@@ -20,12 +20,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 public class RegisterActivity extends BaseActivity {
@@ -55,13 +54,7 @@ public class RegisterActivity extends BaseActivity {
             if (formBody == null) {
                 return;
             }
-            Request request = new Request.Builder()
-                    .url(ServerSettingActivity.getServerBaseUrl() + "/user/register.do")
-                    .post(formBody)
-                    .build();
-            OkHttpClient httpClient = new OkHttpClient();
-            Call call = httpClient.newCall(request);
-            call.enqueue(new Callback() {
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/user/register.do", null, formBody, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "注册失败，发生网络错误！", Toast.LENGTH_SHORT).show());

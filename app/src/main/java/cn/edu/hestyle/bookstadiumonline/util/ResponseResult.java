@@ -5,6 +5,9 @@ package cn.edu.hestyle.bookstadiumonline.util;
  * @param <E> 服务器端向客户端响应数据的类型
  */
 public class ResponseResult<E> {
+    /** DATE字段转json格式 */
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 状态码

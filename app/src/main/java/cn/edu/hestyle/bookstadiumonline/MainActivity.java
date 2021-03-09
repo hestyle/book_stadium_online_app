@@ -13,6 +13,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 
 public class MainActivity extends BaseActivity {
 
@@ -48,6 +49,8 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(MainActivity.this, ServerSettingActivity.class);
             startActivity(intent);
         }
+        // LoginUserInfoUtil init
+        LoginUserInfoUtil.init(this.getApplicationContext());
     }
 
 }
