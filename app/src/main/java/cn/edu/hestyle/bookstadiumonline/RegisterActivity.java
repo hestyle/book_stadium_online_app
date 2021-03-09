@@ -1,36 +1,17 @@
 package cn.edu.hestyle.bookstadiumonline;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-public class LoginActivity extends BaseActivity {
+public class RegisterActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
+        setContentView(R.layout.activity_register);
         // 设置navigationBar
         this.navigationBarInit();
-        // 设置注册跳转button
-        this.registerButtonInit();
-    }
-
-    /**
-     * 设置注册跳转button
-     */
-    private void registerButtonInit() {
-        Button registerButton = this.findViewById(R.id.registerButton);
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     /**
@@ -39,7 +20,7 @@ public class LoginActivity extends BaseActivity {
     private void navigationBarInit() {
         // 设置title
         TextView titleTextView = this.findViewById(R.id.titleTextView);
-        titleTextView.setText("登录");
+        titleTextView.setText("注册");
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(new View.OnClickListener() {
