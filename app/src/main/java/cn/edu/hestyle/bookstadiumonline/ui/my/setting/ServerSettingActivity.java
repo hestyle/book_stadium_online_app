@@ -33,6 +33,10 @@ public class ServerSettingActivity extends BaseActivity {
         return serverPort;
     }
 
+    public static String getServerBaseUrl() {
+        return "http://" + serverIpAddress + ":" + serverPort + "/book_stadium_online";
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,10 +129,12 @@ public class ServerSettingActivity extends BaseActivity {
         if (serverIpAddress == null || serverIpAddress.length() == 0) {
             return false;
         }
+        ServerSettingActivity.serverIpAddress = serverIpAddress;
         String serverPort = sharedPreferences.getString(SERVER_PORT, null);
         if (serverPort == null || serverPort.length() == 0) {
             return false;
         }
+        ServerSettingActivity.serverPort = serverPort;
         return true;
     }
 }
