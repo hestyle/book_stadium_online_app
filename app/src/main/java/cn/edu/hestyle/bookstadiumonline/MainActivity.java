@@ -1,14 +1,18 @@
 package cn.edu.hestyle.bookstadiumonline;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 
 public class MainActivity extends BaseActivity {
 
@@ -33,6 +37,17 @@ public class MainActivity extends BaseActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 判断是否设置了LocalServerSetting
+        if (!ServerSettingActivity.isSavedServerSetting(getApplicationContext())) {
+            Toast.makeText(MainActivity.this, "请先设置服务器ip地址与端口，否则无法访问！", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(MainActivity.this, ServerSettingActivity.class);
+            startActivity(intent);
+        }
     }
 
 }

@@ -1,32 +1,27 @@
-package cn.edu.hestyle.bookstadiumonline;
+package cn.edu.hestyle.bookstadiumonline.ui.my.setting;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-public class LoginActivity extends BaseActivity {
+import cn.edu.hestyle.bookstadiumonline.BaseActivity;
+import cn.edu.hestyle.bookstadiumonline.R;
+
+public class SettingActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
+        setContentView(R.layout.activity_setting);
         // 设置navigationBar
         this.navigationBarInit();
-        // 设置注册跳转
-        this.registerActionInit();
-    }
-
-    /**
-     * 设置注册跳转button
-     */
-    private void registerActionInit() {
-        TextView registerTextView = this.findViewById(R.id.registerTextView);
-        registerTextView.setOnClickListener(new View.OnClickListener() {
+        // 设置goto ServerSettingActivity
+        TextView serverSettingTextView = findViewById(R.id.serverSettingTextView);
+        serverSettingTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(SettingActivity.this, ServerSettingActivity.class);
                 startActivity(intent);
             }
         });
@@ -38,7 +33,7 @@ public class LoginActivity extends BaseActivity {
     private void navigationBarInit() {
         // 设置title
         TextView titleTextView = this.findViewById(R.id.titleTextView);
-        titleTextView.setText("登录");
+        titleTextView.setText("设置");
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(new View.OnClickListener() {

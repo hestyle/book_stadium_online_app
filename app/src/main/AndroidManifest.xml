@@ -9,7 +9,9 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Book_stadium_online_app">
-        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".ui.my.setting.ServerSettingActivity"></activity>
+        <activity android:name=".ui.my.setting.SettingActivity" />
+        <activity android:name=".RegisterActivity" />
         <activity android:name=".BaseActivity" />
         <activity android:name=".LoginActivity" />
         <activity
