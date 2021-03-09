@@ -15,16 +15,16 @@ public class LoginActivity extends BaseActivity {
 
         // 设置navigationBar
         this.navigationBarInit();
-        // 设置注册跳转button
-        this.registerButtonInit();
+        // 设置注册跳转
+        this.registerActionInit();
     }
 
     /**
      * 设置注册跳转button
      */
-    private void registerButtonInit() {
-        Button registerButton = this.findViewById(R.id.registerButton);
-        registerButton.setOnClickListener(new View.OnClickListener() {
+    private void registerActionInit() {
+        TextView registerTextView = this.findViewById(R.id.registerTextView);
+        registerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
