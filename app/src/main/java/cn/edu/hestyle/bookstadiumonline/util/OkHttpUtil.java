@@ -48,8 +48,10 @@ public class OkHttpUtil {
                 requestBuilder.addHeader("token", token);
             }
         }
-
-
+        // 检查是否是空formBody
+        if (formBody == null) {
+            formBody = new FormBody.Builder().build();
+        }
         Request request = requestBuilder.post(formBody).build();
         Call call = OkHttpUtil.httpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -72,10 +74,12 @@ public class OkHttpUtil {
         if (response.request().url().toString().startsWith(ServerSettingActivity.getServerBaseUrl())) {
             // 截取cookie中的JSESSIONID
             String cookieString = response.headers("Set-Cookie").toString();
-            cookieString = cookieString.substring(cookieString.indexOf("JSESSIONID=") + 11);
-            cookieString = cookieString.substring(0, cookieString.indexOf(";"));
-            OkHttpUtil.cookieString = cookieString;
-            Log.i("Cookie", "Cookie 更新！Cookie = " + cookieString);
+            if (cookieString.contains("JSESSIONID=")) {
+                cookieString = cookieString.substring(cookieString.indexOf("JSESSIONID=") + 11);
+                cookieString = cookieString.substring(0, cookieString.indexOf(";"));
+                OkHttpUtil.cookieString = cookieString;
+                Log.i("Cookie", "Cookie 更新！Cookie = " + cookieString);
+            }
         }
 
     }

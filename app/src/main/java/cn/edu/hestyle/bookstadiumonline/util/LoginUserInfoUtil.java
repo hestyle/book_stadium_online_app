@@ -48,7 +48,12 @@ public class LoginUserInfoUtil {
      */
     public static void update(User loginUser) {
         LoginUserInfoUtil.loginUser = loginUser;
-        LoginUserInfoUtil.writeToLocalStore(loginUser);
+        // 如果传入loginUser == null，说明是退出登录
+        if (loginUser != null) {
+            LoginUserInfoUtil.writeToLocalStore(loginUser);
+        } else {
+            LoginUserInfoUtil.removeFromLocalStore();
+        }
     }
 
     /**
@@ -67,6 +72,20 @@ public class LoginUserInfoUtil {
             Log.i("LoginUser", "登录账号信息保存成功！loginUser = " + loginUser);
         } else {
             Log.w("LoginUser", "登录账号信息保存失败！loginUser = " + loginUser);
+        }
+    }
+
+    /**
+     * 将SharedPreferences中的loginUser清除
+     */
+    private static void removeFromLocalStore() {
+        SharedPreferences sharedPreferences = LoginUserInfoUtil.context.getSharedPreferences(LOGIN_USER_INFO_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(LOGIN_USER_JSON_STRING);
+        if (editor.commit()) {
+            Log.i("LoginUser", "已成功清除登录账号信息！");
+        } else {
+            Log.w("LoginUser", "清除登录账号信息失败！");
         }
     }
 

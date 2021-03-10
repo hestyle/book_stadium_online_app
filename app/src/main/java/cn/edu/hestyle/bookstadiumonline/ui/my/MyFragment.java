@@ -74,6 +74,8 @@ public class MyFragment extends Fragment {
         } else {
             this.loginConstraintLayout.setVisibility(View.INVISIBLE);
             this.noLoginConstraintLayout.setVisibility(View.VISIBLE);
+            // 设置默认图片
+            this.avatarImageView.setImageResource(R.drawable.ic_default_avatar);
         }
     }
 
