@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.ui.book;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ import okhttp3.Response;
 public class BookFragment extends Fragment {
     private View rootView;
     private Banner banner;
+    private List<BannerItem> bannerItemList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -72,7 +74,12 @@ public class BookFragment extends Fragment {
         });
         // 设置点击事件
         this.banner.setOnBannerListener(position -> {
-            Toast.makeText(BookFragment.this.getContext(), "您点击了轮播第 " + position + " 张图片！", Toast.LENGTH_SHORT).show();
+            // 进入BannerItemDetailActivity
+            BookFragment.this.getActivity().runOnUiThread(()->{
+                Intent intent = new Intent(BookFragment.this.getActivity(), BannerItemDetailActivity.class);
+                intent.putExtra("BannerItem", bannerItemList.get(position));
+                startActivity(intent);
+            });
         });
         this.banner.start();
     }
@@ -80,32 +87,36 @@ public class BookFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        // 获取服务器banner
-        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/banner/findAll.do", null, null, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Toast.makeText(BookFragment.this.getContext(), "网络访问失败！", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseString = response.body().string();
-                // 转json
-                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
-                Type type =  new TypeToken<ResponseResult<List<BannerItem>>>(){}.getType();
-                final ResponseResult<List<BannerItem>> responseResult = gson.fromJson(responseString, type);
-                List<String> imageList = new ArrayList<>();
-                if (responseResult.getData() != null) {
-                    for (BannerItem bannerItem : responseResult.getData()) {
-                        imageList.add(ServerSettingActivity.getServerHostUrl() + bannerItem.getImagePath());
-                    }
+        if (this.bannerItemList == null) {
+            // 获取服务器banner
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/banner/findAll.do", null, null, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Toast.makeText(BookFragment.this.getContext(), "网络访问失败！", Toast.LENGTH_SHORT).show();
                 }
-                Log.i("Banner", imageList.toString());
-                BookFragment.this.getActivity().runOnUiThread(()->{
-                    BookFragment.this.bannerInit(imageList);
-                });
-            }
-        });
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type =  new TypeToken<ResponseResult<List<BannerItem>>>(){}.getType();
+                    final ResponseResult<List<BannerItem>> responseResult = gson.fromJson(responseString, type);
+                    BookFragment.this.bannerItemList = responseResult.getData();
+                    // 提取出image path
+                    List<String> imageList = new ArrayList<>();
+                    if (responseResult.getData() != null) {
+                        for (BannerItem bannerItem : responseResult.getData()) {
+                            imageList.add(ServerSettingActivity.getServerHostUrl() + bannerItem.getImagePath());
+                        }
+                    }
+                    Log.i("Banner", imageList.toString());
+                    BookFragment.this.getActivity().runOnUiThread(()->{
+                        BookFragment.this.bannerInit(imageList);
+                    });
+                }
+            });
+        }
     }
 
     @Override

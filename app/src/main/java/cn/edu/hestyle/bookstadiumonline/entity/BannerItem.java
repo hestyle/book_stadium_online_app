@@ -1,11 +1,12 @@
 package cn.edu.hestyle.bookstadiumonline.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Banner 实体类
  */
-public class BannerItem {
+public class BannerItem implements Serializable {
     /** id */
     private Integer id;
     /** title */
