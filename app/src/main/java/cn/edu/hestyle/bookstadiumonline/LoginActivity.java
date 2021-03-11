@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 
 import cn.edu.hestyle.bookstadiumonline.entity.User;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
@@ -63,6 +64,8 @@ public class LoginActivity extends BaseActivity {
                     runOnUiThread(() -> {
                         Toast.makeText(LoginActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
                         if (responseResult.getCode() == 200) {
+                            // 登录成功
+                            LoginUserInfoUtil.update(responseResult.getData());
                             LoginActivity.this.finish();
                         }
                     });

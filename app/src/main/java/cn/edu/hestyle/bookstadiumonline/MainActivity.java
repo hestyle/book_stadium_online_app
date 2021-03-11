@@ -27,7 +27,15 @@ public class MainActivity extends BaseActivity {
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
         setContentView(R.layout.activity_main);
-        //去除标题栏
+        // 判断是否设置了LocalServerSetting
+        if (!ServerSettingActivity.isSavedServerSetting(getApplicationContext())) {
+            Toast.makeText(MainActivity.this, "请先设置服务器ip地址与端口，否则无法访问！", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(MainActivity.this, ServerSettingActivity.class);
+            startActivity(intent);
+        }
+        // LoginUserInfoUtil init
+        LoginUserInfoUtil.init(this.getApplicationContext());
+        // 去除标题栏
         this.getSupportActionBar().hide();
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -43,14 +51,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // 判断是否设置了LocalServerSetting
-        if (!ServerSettingActivity.isSavedServerSetting(getApplicationContext())) {
-            Toast.makeText(MainActivity.this, "请先设置服务器ip地址与端口，否则无法访问！", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(MainActivity.this, ServerSettingActivity.class);
-            startActivity(intent);
-        }
-        // LoginUserInfoUtil init
-        LoginUserInfoUtil.init(this.getApplicationContext());
     }
 
 }

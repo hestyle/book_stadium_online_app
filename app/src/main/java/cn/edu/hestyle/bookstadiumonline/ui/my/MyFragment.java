@@ -7,18 +7,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+
 import cn.edu.hestyle.bookstadiumonline.LoginActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
+import cn.edu.hestyle.bookstadiumonline.entity.User;
+import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.SettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 
 public class MyFragment extends Fragment {
     private View rootView;
+    private ConstraintLayout noLoginConstraintLayout;
+    private ConstraintLayout loginConstraintLayout;
+    private ImageView avatarImageView;
+    private TextView usernameTextView;
+    private TextView scoreTextView;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -34,8 +46,37 @@ public class MyFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        this.noLoginConstraintLayout = this.rootView.findViewById(R.id.noLoginConstraintLayout);
+        this.loginConstraintLayout = this.rootView.findViewById(R.id.loginConstraintLayout);
+        this.avatarImageView = this.rootView.findViewById(R.id.avatarImageView);
+        this.usernameTextView = this.rootView.findViewById(R.id.usernameTextView);
+        this.scoreTextView = this.rootView.findViewById(R.id.scoreTextView);
 
         return this.rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        User loginUser = LoginUserInfoUtil.getLoginUser();
+        if (loginUser != null) {
+            this.noLoginConstraintLayout.setVisibility(View.INVISIBLE);
+            this.loginConstraintLayout.setVisibility(View.VISIBLE);
+            String avatarPath = loginUser.getAvatarPath();
+            if (avatarPath != null && avatarPath.length() != 0) {
+                // 加载网络图片
+                Glide.with(MyFragment.this.getActivity())
+                        .load(ServerSettingActivity.getServerHostUrl() + loginUser.getAvatarPath())
+                        .into(this.avatarImageView);
+            }
+            this.usernameTextView.setText(loginUser.getUsername());
+            this.scoreTextView.setText(String.format("%d", loginUser.getCreditScore()));
+        } else {
+            this.loginConstraintLayout.setVisibility(View.INVISIBLE);
+            this.noLoginConstraintLayout.setVisibility(View.VISIBLE);
+            // 设置默认图片
+            this.avatarImageView.setImageResource(R.drawable.ic_default_avatar);
+        }
     }
 
     /**

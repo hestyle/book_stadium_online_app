@@ -33,6 +33,10 @@ public class ServerSettingActivity extends BaseActivity {
         return serverPort;
     }
 
+    public static String getServerHostUrl() {
+        return "http://" + serverIpAddress + ":" + serverPort;
+    }
+
     public static String getServerBaseUrl() {
         return "http://" + serverIpAddress + ":" + serverPort + "/book_stadium_online";
     }
