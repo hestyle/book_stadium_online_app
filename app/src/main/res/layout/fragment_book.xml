@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.book.BookFragment">
 
-    <include layout="@layout/include_back_navigation_bar"/>
+    <include layout="@layout/include_search_navigation_bar"/>
 
     <TextView
         android:id="@+id/text_book"
