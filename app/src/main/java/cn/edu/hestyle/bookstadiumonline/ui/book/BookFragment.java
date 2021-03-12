@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -60,6 +59,12 @@ public class BookFragment extends Fragment {
 
         this.banner = this.rootView.findViewById(R.id.banner);
         this.stadiumCategoryGridView = this.rootView.findViewById(R.id.stadiumCategoryGridView);
+
+        TextView gotoAllStadiumCategoryTextView = this.rootView.findViewById(R.id.gotoAllStadiumCategoryTextView);
+        gotoAllStadiumCategoryTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(BookFragment.this.getActivity(), StadiumCategoryListActivity.class);
+            startActivity(intent);
+        });
 
         return this.rootView;
     }
