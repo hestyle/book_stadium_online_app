@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.ui.book;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -192,7 +193,9 @@ public class StadiumCategoryListActivity extends BaseActivity {
             holder.stadiumCategoryTitleTextView.setText(stadiumCategory.getTitle() + "");
             holder.stadiumCategoryDescriptionTextView.setText(stadiumCategory.getDescription() + "");
             holder.itemView.setOnClickListener(v -> {
-                Toast.makeText(context, "点击了" + holder.stadiumCategoryTitleTextView.getText(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(StadiumCategoryListActivity.this, StadiumCategoryDetailActivity.class);
+                intent.putExtra("StadiumCategory", stadiumCategory);
+                startActivity(intent);
             });
         }
 

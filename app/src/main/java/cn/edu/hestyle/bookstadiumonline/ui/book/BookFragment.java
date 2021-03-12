@@ -108,7 +108,9 @@ public class BookFragment extends Fragment {
     private void stadiumCategoryGridViewInit() {
         this.stadiumCategoryGridView.setAdapter(new StadiumCategoryAdapter(stadiumCategoryList, BookFragment.this.getContext()));
         this.stadiumCategoryGridView.setOnItemClickListener((parent, view, position, id) -> {
-            Toast.makeText(BookFragment.this.getContext(), "点击了第" + position + "个StadiumCategory", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(BookFragment.this.getActivity(), StadiumCategoryDetailActivity.class);
+            intent.putExtra("StadiumCategory", stadiumCategoryList.get(position));
+            startActivity(intent);
         });
     }
 
