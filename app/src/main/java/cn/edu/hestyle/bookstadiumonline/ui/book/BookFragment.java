@@ -64,7 +64,7 @@ public class BookFragment extends Fragment {
         return this.rootView;
     }
 
-    private void bannerInit(List<String> imageList) {
+    private void bannerInit() {
         // 设置圆形指示器
         this.banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
         // 设置指示器位置
@@ -74,11 +74,17 @@ public class BookFragment extends Fragment {
         // 设置轮播间隔
         this.banner.setDelayTime(5000);
         // 设置图片资源
+        List<String> imageList = new ArrayList<>();
+        if (this.bannerItemList != null) {
+            for (BannerItem bannerItem : this.bannerItemList) {
+                imageList.add(ServerSettingActivity.getServerHostUrl() + bannerItem.getImagePath());
+            }
+        }
         this.banner.setImages(imageList);
+        // 设置图片加载器
         this.banner.setImageLoader(new ImageLoader() {
             @Override
             public void displayImage(Context context, Object path, ImageView imageView) {
-                Log.i("BannerItem", path.toString());
                 Glide.with(context).load(path.toString()).into(imageView);
             }
         });
@@ -122,19 +128,14 @@ public class BookFragment extends Fragment {
                     Type type =  new TypeToken<ResponseResult<List<BannerItem>>>(){}.getType();
                     final ResponseResult<List<BannerItem>> responseResult = gson.fromJson(responseString, type);
                     BookFragment.this.bannerItemList = responseResult.getData();
-                    // 提取出image path
-                    List<String> imageList = new ArrayList<>();
-                    if (responseResult.getData() != null) {
-                        for (BannerItem bannerItem : responseResult.getData()) {
-                            imageList.add(ServerSettingActivity.getServerHostUrl() + bannerItem.getImagePath());
-                        }
-                    }
-                    Log.i("Banner", imageList.toString());
+                    Log.i("Banner", BookFragment.this.bannerItemList.toString());
                     BookFragment.this.getActivity().runOnUiThread(()->{
-                        BookFragment.this.bannerInit(imageList);
+                        BookFragment.this.bannerInit();
                     });
                 }
             });
+        } else {
+            this.bannerInit();
         }
         if (this.stadiumCategoryList == null) {
             // 从服务器获取stadiumCategory
