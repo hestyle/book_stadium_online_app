@@ -41,6 +41,8 @@ import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.BannerItem;
 import cn.edu.hestyle.bookstadiumonline.entity.Stadium;
 import cn.edu.hestyle.bookstadiumonline.entity.StadiumCategory;
+import cn.edu.hestyle.bookstadiumonline.ui.book.view.StadiumCategoryGridView;
+import cn.edu.hestyle.bookstadiumonline.ui.book.adapter.StadiumRecycleAdapter;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
@@ -64,7 +66,7 @@ public class BookFragment extends Fragment {
     private List<Stadium> stadiumList;
     private SmartRefreshLayout stadiumSmartRefreshLayout;
     private RecyclerView stadiumRecyclerView;
-    private BookFragment.RecycleAdapter recycleAdapter;
+    private StadiumRecycleAdapter stadiumRecycleAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -111,8 +113,8 @@ public class BookFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         stadiumRecyclerView.setLayoutManager(linearLayoutManager);
-        recycleAdapter = new BookFragment.RecycleAdapter(this.getContext());
-        stadiumRecyclerView.setAdapter(recycleAdapter);
+        stadiumRecycleAdapter = new StadiumRecycleAdapter(this.getContext(), stadiumList);
+        stadiumRecyclerView.setAdapter(stadiumRecycleAdapter);
         // 添加分割线
         stadiumRecyclerView.addItemDecoration(new DividerItemDecoration(BookFragment.this.getContext(), DividerItemDecoration.VERTICAL));
 
@@ -300,7 +302,8 @@ public class BookFragment extends Fragment {
                         BookFragment.this.nextPageIndex = 0;
                     }
                     BookFragment.this.stadiumSmartRefreshLayout.setLoadmoreFinished(!finalHasNextPage);
-                    BookFragment.this.recycleAdapter.notifyDataSetChanged();
+                    // update
+                    BookFragment.this.stadiumRecycleAdapter.updateData(BookFragment.this.stadiumList);
                 });
             }
         });
@@ -365,68 +368,6 @@ public class BookFragment extends Fragment {
                     .into(stadiumCategoryViewHolder.stadiumCategoryImageView);
             stadiumCategoryViewHolder.stadiumCategoryTitleTextView.setText(stadiumCategory.getTitle());
             return convertView;
-        }
-    }
-
-    private class RecycleAdapter extends RecyclerView.Adapter<BookFragment.RecycleAdapter.MyViewHolder>{
-        private Context context;
-        private View inflater;
-
-        public RecycleAdapter(Context context){
-            this.context = context;
-        }
-
-        @Override
-        public BookFragment.RecycleAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            //创建ViewHolder，返回每一项的布局
-            inflater = LayoutInflater.from(context).inflate(R.layout.item_stadium_recyclerview, parent, false);
-            return new BookFragment.RecycleAdapter.MyViewHolder(inflater);
-        }
-
-        @Override
-        public void onBindViewHolder(BookFragment.RecycleAdapter.MyViewHolder holder, int position) {
-            // 将数据和控件绑定
-            Stadium stadium = stadiumList.get(position);
-            Log.i("Stadium", stadium.toString());
-            // 加载网络图片(只加载第一张)
-            if (stadium.getImagePaths() != null && stadium.getImagePaths().length() != 0) {
-                String[] imagePaths = stadium.getImagePaths().split(",");
-                Glide.with(inflater.getContext())
-                        .load(ServerSettingActivity.getServerHostUrl() + imagePaths[0])
-                        .into(holder.stadiumImageView);
-            }
-            holder.stadiumTitleTextView.setText(String.format("%s", stadium.getName()));
-            holder.stadiumDescriptionTextView.setText(String.format("%s", stadium.getDescription()));
-            holder.stadiumAddressTextView.setText(String.format("地址：%s", stadium.getAddress()));
-            holder.itemView.setOnClickListener(v -> {
-                Toast.makeText(context, "点击了体育场馆[ " + stadium.getName() + " ]", Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            // 返回Item总条数
-            if (stadiumList != null) {
-                return stadiumList.size();
-            } else {
-                return 0;
-            }
-        }
-
-        //内部类，绑定控件
-        class MyViewHolder extends RecyclerView.ViewHolder{
-            public ImageView stadiumImageView;
-            public TextView stadiumTitleTextView;
-            public TextView stadiumDescriptionTextView;
-            public TextView stadiumAddressTextView;
-
-            public MyViewHolder(View itemView) {
-                super(itemView);
-                stadiumImageView = itemView.findViewById(R.id.stadiumImageView);
-                stadiumTitleTextView = itemView.findViewById(R.id.stadiumTitleTextView);
-                stadiumDescriptionTextView = itemView.findViewById(R.id.stadiumDescriptionTextView);
-                stadiumAddressTextView = itemView.findViewById(R.id.stadiumAddressTextView);
-            }
         }
     }
 }

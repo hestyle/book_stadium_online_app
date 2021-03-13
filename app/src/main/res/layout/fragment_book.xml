@@ -75,7 +75,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <cn.edu.hestyle.bookstadiumonline.ui.book.StadiumCategoryGridView
+                <cn.edu.hestyle.bookstadiumonline.ui.book.view.StadiumCategoryGridView
                     android:id="@+id/stadiumCategoryGridView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
