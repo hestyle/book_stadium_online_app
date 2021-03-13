@@ -1,21 +1,18 @@
 package cn.edu.hestyle.bookstadiumonline.ui.book;
 
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -33,7 +30,6 @@ import java.util.List;
 import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.Stadium;
-import cn.edu.hestyle.bookstadiumonline.entity.StadiumCategory;
 import cn.edu.hestyle.bookstadiumonline.ui.book.adapter.StadiumRecycleAdapter;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -43,8 +39,7 @@ import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.Response;
 
-public class StadiumCategoryDetailActivity extends BaseActivity {
-    private StadiumCategory stadiumCategory;
+public class StadiumListActivity extends BaseActivity {
     /** 一页的数量 */
     private static final Integer PER_PAGE_COUNT = 10;
     private Integer nextPageIndex;
@@ -56,42 +51,26 @@ public class StadiumCategoryDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stadium_category_detail);
+        setContentView(R.layout.activity_stadium_list);
 
-        ImageView stadiumCategoryImageView = findViewById(R.id.stadiumCategoryImageView);
-        TextView stadiumCategoryTitleTextView = findViewById(R.id.stadiumCategoryTitleTextView);
-        TextView stadiumCategoryDescriptionTextView = findViewById(R.id.stadiumCategoryDescriptionTextView);
+        this.navigationBarInit("体育场馆");
 
-        Intent intent = getIntent();
-        this.stadiumCategory = (StadiumCategory) intent.getSerializableExtra("StadiumCategory");
-        // 设置navigationBar
-        if (this.stadiumCategory != null) {
-            // title
-            this.navigationBarInit(this.stadiumCategory.getTitle());
-            stadiumCategoryTitleTextView.setText(String.format("%s", this.stadiumCategory.getTitle()));
-            stadiumCategoryDescriptionTextView.setText(String.format("%s", this.stadiumCategory.getDescription()));
-            // image
-            if (this.stadiumCategory.getImagePath() != null) {
-                Glide.with(StadiumCategoryDetailActivity.this)
-                        .load(ServerSettingActivity.getServerHostUrl() + this.stadiumCategory.getImagePath())
-                        .into(stadiumCategoryImageView);
-            }
-        }
+        this.nextPageIndex = 1;
+        this.stadiumList = null;
 
         stadiumSmartRefreshLayout = findViewById(R.id.stadiumSmartRefreshLayout);
         stadiumSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-                // 重新访问第一页
-                StadiumCategoryDetailActivity.this.nextPageIndex = 1;
-                StadiumCategoryDetailActivity.this.getNextPageFromServer();
+                StadiumListActivity.this.nextPageIndex = 1;
+                StadiumListActivity.this.getNextPageStadiumFromServer();
             }
         });
         stadiumSmartRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
                 // 访问下一页
-                StadiumCategoryDetailActivity.this.getNextPageFromServer();
+                StadiumListActivity.this.getNextPageStadiumFromServer();
             }
         });
         stadiumRecyclerView = findViewById(R.id.stadiumRecyclerView);
@@ -101,20 +80,25 @@ public class StadiumCategoryDetailActivity extends BaseActivity {
         stadiumRecycleAdapter = new StadiumRecycleAdapter(this, stadiumList);
         stadiumRecyclerView.setAdapter(stadiumRecycleAdapter);
         // 添加分割线
-        stadiumRecyclerView.addItemDecoration(new DividerItemDecoration(StadiumCategoryDetailActivity.this, DividerItemDecoration.VERTICAL));
+        stadiumRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (stadiumList == null) {
+        if (this.stadiumList == null) {
+            // 获取推荐的场馆
             this.nextPageIndex = 1;
             this.stadiumList = null;
-            getNextPageFromServer();
+            getNextPageStadiumFromServer();
         }
     }
 
-    private void getNextPageFromServer() {
+    /**
+     * 获取下一页Stadium
+     */
+    private void getNextPageStadiumFromServer() {
         if (this.nextPageIndex == 0) {
             Toast.makeText(this, "暂无更多内容！", Toast.LENGTH_SHORT).show();
             stadiumSmartRefreshLayout.finishLoadmore();
@@ -122,15 +106,14 @@ public class StadiumCategoryDetailActivity extends BaseActivity {
         }
         // 从服务器获取stadiumCategory
         FormBody formBody = new FormBody.Builder()
-                .add("stadiumCategoryId", "" + stadiumCategory.getId())
                 .add("pageIndex", "" + nextPageIndex)
                 .add("pageSize", "" + PER_PAGE_COUNT)
                 .build();
-        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/stadium/findByStadiumCategoryId.do", null, formBody, new Callback() {
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/stadium/findByPage.do", null, formBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                StadiumCategoryDetailActivity.this.runOnUiThread(()->{
-                    Toast.makeText(StadiumCategoryDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                StadiumListActivity.this.runOnUiThread(()->{
+                    Toast.makeText(StadiumListActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -144,10 +127,10 @@ public class StadiumCategoryDetailActivity extends BaseActivity {
                 List<Stadium> stadiumList = responseResult.getData();
                 Log.i("Stadium", stadiumList.toString());
                 // 访问第一页，或者追加
-                if (StadiumCategoryDetailActivity.this.nextPageIndex == 1) {
-                    StadiumCategoryDetailActivity.this.stadiumList = stadiumList;
+                if (StadiumListActivity.this.nextPageIndex == 1) {
+                    StadiumListActivity.this.stadiumList = stadiumList;
                 } else {
-                    StadiumCategoryDetailActivity.this.stadiumList.addAll(stadiumList);
+                    StadiumListActivity.this.stadiumList.addAll(stadiumList);
                 }
                 // 判断是否有下一页
                 boolean hasNextPage = true;
@@ -155,23 +138,23 @@ public class StadiumCategoryDetailActivity extends BaseActivity {
                     hasNextPage = false;
                 }
                 boolean finalHasNextPage = hasNextPage;
-                StadiumCategoryDetailActivity.this.runOnUiThread(()->{
-                    if (StadiumCategoryDetailActivity.this.nextPageIndex == 1) {
+                StadiumListActivity.this.runOnUiThread(()->{
+                    if (StadiumListActivity.this.nextPageIndex == 1) {
                         // 访问第一页，也可能是刷新
-                        StadiumCategoryDetailActivity.this.stadiumSmartRefreshLayout.finishRefresh();
-                        StadiumCategoryDetailActivity.this.stadiumSmartRefreshLayout.setLoadmoreFinished(false);
+                        StadiumListActivity.this.stadiumSmartRefreshLayout.finishRefresh();
+                        StadiumListActivity.this.stadiumSmartRefreshLayout.setLoadmoreFinished(false);
                     } else {
-                        StadiumCategoryDetailActivity.this.stadiumSmartRefreshLayout.finishLoadmore();
+                        StadiumListActivity.this.stadiumSmartRefreshLayout.finishLoadmore();
                     }
                     // 根据是否有下一页，修改nextPageIndex
                     if (finalHasNextPage) {
-                        StadiumCategoryDetailActivity.this.nextPageIndex += 1;
+                        StadiumListActivity.this.nextPageIndex += 1;
                     } else {
-                        StadiumCategoryDetailActivity.this.nextPageIndex = 0;
+                        StadiumListActivity.this.nextPageIndex = 0;
                     }
-                    StadiumCategoryDetailActivity.this.stadiumSmartRefreshLayout.setLoadmoreFinished(!finalHasNextPage);
+                    StadiumListActivity.this.stadiumSmartRefreshLayout.setLoadmoreFinished(!finalHasNextPage);
                     // update
-                    StadiumCategoryDetailActivity.this.stadiumRecycleAdapter.updateData(StadiumCategoryDetailActivity.this.stadiumList);
+                    StadiumListActivity.this.stadiumRecycleAdapter.updateData(StadiumListActivity.this.stadiumList);
                 });
             }
         });
@@ -183,9 +166,27 @@ public class StadiumCategoryDetailActivity extends BaseActivity {
     private void navigationBarInit(String title) {
         // 设置title
         TextView titleTextView = this.findViewById(R.id.titleTextView);
-        titleTextView.setText(String.format("分类 - %s", title));
+        titleTextView.setText(title);
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(v -> finish());
+
+        ConstraintLayout stadiumListConstraintLayout = findViewById(R.id.stadium_list_navigation_bar);
+        // 设置right search
+        ImageButton rightSearchImageButton = new ImageButton(this);
+        rightSearchImageButton.setBackgroundColor(Color.TRANSPARENT);
+        rightSearchImageButton.setImageResource(R.drawable.ic_search_white);
+        ConstraintLayout.LayoutParams rightSearchLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
+        rightSearchLayoutParams.rightMargin = 15;
+        rightSearchLayoutParams.endToEnd = R.id.stadium_list_navigation_bar;
+        rightSearchLayoutParams.topToTop = R.id.stadium_list_navigation_bar;
+        rightSearchLayoutParams.bottomToBottom = R.id.stadium_list_navigation_bar;
+        rightSearchImageButton.setLayoutParams(rightSearchLayoutParams);
+        rightSearchImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(StadiumListActivity.this, StadiumSearchActivity.class);
+            startActivity(intent);
+        });
+        stadiumListConstraintLayout.addView(rightSearchImageButton);
+
     }
 }

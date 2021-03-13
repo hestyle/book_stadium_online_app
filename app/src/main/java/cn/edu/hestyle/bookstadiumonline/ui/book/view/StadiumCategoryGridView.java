@@ -1,4 +1,4 @@
-package cn.edu.hestyle.bookstadiumonline.ui.book;
+package cn.edu.hestyle.bookstadiumonline.ui.book.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
