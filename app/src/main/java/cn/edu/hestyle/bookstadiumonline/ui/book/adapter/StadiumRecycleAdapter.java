@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.ui.book.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.Stadium;
+import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 
 public class StadiumRecycleAdapter extends RecyclerView.Adapter<StadiumRecycleAdapter.StadiumViewHolder> {
@@ -62,7 +64,9 @@ public class StadiumRecycleAdapter extends RecyclerView.Adapter<StadiumRecycleAd
         holder.stadiumDescriptionTextView.setText(String.format("%s", stadium.getDescription()));
         holder.stadiumAddressTextView.setText(String.format("地址：%s", stadium.getAddress()));
         holder.itemView.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了体育场馆[ " + stadium.getName() + " ]", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(context, StadiumDetailActivity.class);
+            intent.putExtra("Stadium", stadium);
+            context.startActivity(intent);
         });
     }
 
