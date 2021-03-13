@@ -1,10 +1,14 @@
 package cn.edu.hestyle.bookstadiumonline.ui.book;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -166,5 +170,23 @@ public class StadiumListActivity extends BaseActivity {
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(v -> finish());
+
+        ConstraintLayout stadiumListConstraintLayout = findViewById(R.id.stadium_list_navigation_bar);
+        // 设置right search
+        ImageButton rightSearchImageButton = new ImageButton(this);
+        rightSearchImageButton.setBackgroundColor(Color.TRANSPARENT);
+        rightSearchImageButton.setImageResource(R.drawable.ic_search_white);
+        ConstraintLayout.LayoutParams rightSearchLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
+        rightSearchLayoutParams.rightMargin = 15;
+        rightSearchLayoutParams.endToEnd = R.id.stadium_list_navigation_bar;
+        rightSearchLayoutParams.topToTop = R.id.stadium_list_navigation_bar;
+        rightSearchLayoutParams.bottomToBottom = R.id.stadium_list_navigation_bar;
+        rightSearchImageButton.setLayoutParams(rightSearchLayoutParams);
+        rightSearchImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(StadiumListActivity.this, StadiumSearchActivity.class);
+            startActivity(intent);
+        });
+        stadiumListConstraintLayout.addView(rightSearchImageButton);
+
     }
 }
