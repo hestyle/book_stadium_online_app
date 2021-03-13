@@ -44,6 +44,7 @@
 
             <TextView
                 android:id="@+id/footTextView"
+                android:background="@drawable/border_title_top"
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginVertical="10dp"
                 android:layout_width="match_parent"

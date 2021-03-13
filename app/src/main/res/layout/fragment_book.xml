@@ -9,70 +9,132 @@
     <include android:id="@+id/fragment_book_navigation_bar"
         layout="@layout/include_search_navigation_bar"/>
 
-    <ScrollView
-        android:layout_width="0dp"
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/stadiumSmartRefreshLayout"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_book_navigation_bar"
+        app:layout_constraintTop_toBottomOf="@id/fragment_book_navigation_bar"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <!--srlAccentColor srlPrimaryColor 将会改变 Header 和 Footer 的主题颜色-->
+        <!--srlEnablePreviewInEditMode 可以开启和关闭预览功能-->
+
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"/>
 
-            <com.youth.banner.Banner
-                android:id="@+id/banner"
-                app:indicator_height="8dp"
-                app:indicator_width="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="170dp"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginVertical="10dp"/>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/stadiumCategoryTitleConstraintLayout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp" >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/stadiumCategoryTitleTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:text="体育场馆分类"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:id="@+id/gotoAllStadiumCategoryTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:drawableRight="@drawable/ic_detail_small"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/stadiumCategoryTitleTextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:text="所有分类" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <cn.edu.hestyle.bookstadiumonline.ui.book.StadiumCategoryGridView
-                android:id="@+id/stadiumCategoryGridView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:numColumns="5"
-                android:stretchMode="columnWidth"
-                android:verticalSpacing="5dp"
-                android:paddingBottom="10dp"
-                android:background="@drawable/border_section_bottom"/>
+                android:orientation="vertical">
 
-        </LinearLayout>
-    </ScrollView>
+                <com.youth.banner.Banner
+                    android:id="@+id/banner"
+                    app:indicator_height="8dp"
+                    app:indicator_width="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="10dp"/>
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/stadiumCategoryTitleConstraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/border_title_bottom">
+
+                    <TextView
+                        android:id="@+id/stadiumCategoryTitleTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:text="体育场馆分类"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/gotoAllStadiumCategoryTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="15dp"
+                        android:drawableRight="@drawable/ic_detail_small"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/stadiumCategoryTitleTextView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:text="所有分类" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <cn.edu.hestyle.bookstadiumonline.ui.book.StadiumCategoryGridView
+                    android:id="@+id/stadiumCategoryGridView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:numColumns="5"
+                    android:stretchMode="columnWidth"
+                    android:verticalSpacing="5dp"
+                    android:paddingBottom="10dp"
+                    android:background="@drawable/border_section_bottom"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/stadiumTitleConstraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/border_title_bottom">
+
+                    <TextView
+                        android:id="@+id/stadiumTitleTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:text="推荐体育场馆"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"/>
+
+                    <TextView
+                        android:id="@+id/gotoAllStadiumTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="15dp"
+                        android:drawableRight="@drawable/ic_detail_small"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/stadiumTitleTextView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:text="所有推荐" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/stadiumRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,7 @@
             <solid android:color="#bfbfbf"/>
         </shape>
     </item>
-    <item android:bottom="6dp">
+    <item android:top="1dp">
         <shape>
             <!-- View填充颜色 -->
             <solid android:color="@color/white" />
