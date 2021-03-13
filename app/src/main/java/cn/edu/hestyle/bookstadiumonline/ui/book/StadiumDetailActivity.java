@@ -72,7 +72,11 @@ public class StadiumDetailActivity extends BaseActivity {
         // 查看所有评论
         TextView gotoStadiumAllCommentTextView = findViewById(R.id.gotoStadiumAllCommentTextView);
         gotoStadiumAllCommentTextView.setOnClickListener(v -> {
-            Toast.makeText(StadiumDetailActivity.this, "点击了查看所有评论", Toast.LENGTH_SHORT).show();
+            if (stadium != null && stadium.getId() != null) {
+                Intent stadiumCommentIntent = new Intent(StadiumDetailActivity.this, StadiumCommentListActivity.class);
+                stadiumCommentIntent.putExtra("stadiumId", stadium.getId());
+                startActivity(stadiumCommentIntent);
+            }
         });
         // 选择预约时段
         TextView selectStadiumBookTextView = findViewById(R.id.selectStadiumBookTextView);
