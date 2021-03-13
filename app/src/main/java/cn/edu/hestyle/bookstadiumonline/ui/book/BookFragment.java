@@ -80,6 +80,7 @@ public class BookFragment extends Fragment {
         this.banner = this.rootView.findViewById(R.id.banner);
         this.stadiumCategoryGridView = this.rootView.findViewById(R.id.stadiumCategoryGridView);
 
+        // 所有场馆分类action
         TextView gotoAllStadiumCategoryTextView = this.rootView.findViewById(R.id.gotoAllStadiumCategoryTextView);
         gotoAllStadiumCategoryTextView.setOnClickListener(v -> {
             Intent intent = new Intent(BookFragment.this.getActivity(), StadiumCategoryListActivity.class);
@@ -117,6 +118,13 @@ public class BookFragment extends Fragment {
         stadiumRecyclerView.setAdapter(stadiumRecycleAdapter);
         // 添加分割线
         stadiumRecyclerView.addItemDecoration(new DividerItemDecoration(BookFragment.this.getContext(), DividerItemDecoration.VERTICAL));
+
+        // 所有推荐场馆action
+        TextView gotoAllStadiumTextView = this.rootView.findViewById(R.id.gotoAllStadiumTextView);
+        gotoAllStadiumTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(BookFragment.this.getActivity(), StadiumListActivity.class);
+            startActivity(intent);
+        });
 
         return this.rootView;
     }
