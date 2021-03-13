@@ -50,7 +50,8 @@
                     android:id="@+id/stadiumCommentConstraintLayout"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:background="@drawable/border_title_bottom">
+                    android:paddingBottom="6dp"
+                    android:background="@drawable/border_section_bottom">
 
                     <TextView
                         android:id="@+id/stadiumCommentTitleTextView"
@@ -81,7 +82,8 @@
                     android:id="@+id/stadiumBookConstraintLayout"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:background="@drawable/border_title_bottom">
+                    android:paddingBottom="6dp"
+                    android:background="@drawable/border_section_bottom">
 
                     <TextView
                         android:id="@+id/stadiumBookTitleTextView"
@@ -110,7 +112,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="39dp"
                     android:background="@drawable/border_title_bottom">
 
                     <TextView
