@@ -3,6 +3,7 @@ package cn.edu.hestyle.bookstadiumonline.ui.book;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ import okhttp3.Response;
 
 public class StadiumCommentListActivity extends BaseActivity {
     private Integer stadiumId;
+    private TextView tipsTextView;
     /** 一页的数量 */
     private static final Integer PER_PAGE_COUNT = 10;
     private Integer nextPageIndex;
@@ -58,6 +60,7 @@ public class StadiumCommentListActivity extends BaseActivity {
 
         this.nextPageIndex = 1;
         this.stadiumCommentList = null;
+        this.tipsTextView = findViewById(R.id.tipsTextView);
 
         stadiumCommentSmartRefreshLayout = findViewById(R.id.stadiumCommentSmartRefreshLayout);
         stadiumCommentSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
@@ -92,6 +95,10 @@ public class StadiumCommentListActivity extends BaseActivity {
             this.nextPageIndex = 1;
             this.stadiumCommentList = null;
             getNextPageStadiumCommentFromServer();
+        } else {
+            this.tipsTextView.setText("暂无评论数据！");
+            this.tipsTextView.setVisibility(View.VISIBLE);
+            this.stadiumCommentSmartRefreshLayout.setVisibility(View.GONE);
         }
     }
 
@@ -156,6 +163,14 @@ public class StadiumCommentListActivity extends BaseActivity {
                     StadiumCommentListActivity.this.stadiumCommentSmartRefreshLayout.setLoadmoreFinished(!finalHasNextPage);
                     // update
                     StadiumCommentListActivity.this.stadiumCommentRecycleAdapter.updateData(StadiumCommentListActivity.this.stadiumCommentList);
+                    if (StadiumCommentListActivity.this.stadiumCommentList == null || StadiumCommentListActivity.this.stadiumCommentList.size() == 0) {
+                        StadiumCommentListActivity.this.tipsTextView.setText("暂无评论数据！");
+                        StadiumCommentListActivity.this.tipsTextView.setVisibility(View.VISIBLE);
+                        StadiumCommentListActivity.this.stadiumCommentSmartRefreshLayout.setVisibility(View.GONE);
+                    } else {
+                        StadiumCommentListActivity.this.tipsTextView.setVisibility(View.GONE);
+                        StadiumCommentListActivity.this.stadiumCommentSmartRefreshLayout.setVisibility(View.VISIBLE);
+                    }
                 });
             }
         });
