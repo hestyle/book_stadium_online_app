@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -126,6 +127,12 @@ public class BookFragment extends Fragment {
             startActivity(intent);
         });
 
+        // 场馆搜索action
+        ConstraintLayout searchConstraintLayout = this.rootView.findViewById(R.id.fragment_book_navigation_bar);
+        searchConstraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(BookFragment.this.getActivity(), StadiumSearchActivity.class);
+            startActivity(intent);
+        });
         return this.rootView;
     }
 
