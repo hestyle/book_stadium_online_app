@@ -132,6 +132,12 @@ public class StadiumCommentListActivity extends BaseActivity {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<StadiumComment>>>(){}.getType();
                 final ResponseResult<List<StadiumComment>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    StadiumCommentListActivity.this.runOnUiThread(()->{
+                        Toast.makeText(StadiumCommentListActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 List<StadiumComment> stadiumCommentList = responseResult.getData();
                 Log.i("Stadium", stadiumCommentList + "");
                 // 访问第一页，或者追加

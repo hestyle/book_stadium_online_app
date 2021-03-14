@@ -81,7 +81,11 @@ public class StadiumDetailActivity extends BaseActivity {
         // 选择预约时段
         TextView selectStadiumBookTextView = findViewById(R.id.selectStadiumBookTextView);
         selectStadiumBookTextView.setOnClickListener(v -> {
-            Toast.makeText(StadiumDetailActivity.this, "点击了选择时段", Toast.LENGTH_SHORT).show();
+            if (stadium != null && stadium.getId() != null) {
+                Intent stadiumBookIntent = new Intent(StadiumDetailActivity.this, StadiumBookListActivity.class);
+                stadiumBookIntent.putExtra("stadiumId", stadium.getId());
+                startActivity(stadiumBookIntent);
+            }
         });
 
         this.init();
@@ -146,6 +150,12 @@ public class StadiumDetailActivity extends BaseActivity {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<Stadium>>(){}.getType();
                 final ResponseResult<Stadium> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    StadiumDetailActivity.this.runOnUiThread(()->{
+                        Toast.makeText(StadiumDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 StadiumDetailActivity.this.stadium = responseResult.getData();
                 Log.i("Stadium", responseResult.getData() + "");
                 StadiumDetailActivity.this.runOnUiThread(()->{

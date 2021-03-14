@@ -1,12 +1,8 @@
 package cn.edu.hestyle.bookstadiumonline.ui.book;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -141,6 +137,12 @@ public class StadiumCategoryDetailActivity extends BaseActivity {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<Stadium>>>(){}.getType();
                 final ResponseResult<List<Stadium>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    StadiumCategoryDetailActivity.this.runOnUiThread(()->{
+                        Toast.makeText(StadiumCategoryDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 List<Stadium> stadiumList = responseResult.getData();
                 Log.i("Stadium", stadiumList.toString());
                 // 访问第一页，或者追加
