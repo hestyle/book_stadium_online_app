@@ -210,6 +210,12 @@ public class StadiumBookListActivity extends BaseActivity {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
                 final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    StadiumBookListActivity.this.runOnUiThread(()->{
+                        Toast.makeText(StadiumBookListActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 StadiumBookListActivity.this.runOnUiThread(()->{
                     Toast.makeText(StadiumBookListActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
                 });

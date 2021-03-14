@@ -221,6 +221,12 @@ public class BookFragment extends Fragment {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<BannerItem>>>(){}.getType();
                 final ResponseResult<List<BannerItem>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    BookFragment.this.getActivity().runOnUiThread(()->{
+                        Toast.makeText(BookFragment.this.getContext(), responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 BookFragment.this.bannerItemList = responseResult.getData();
                 Log.i("Banner", BookFragment.this.bannerItemList.toString());
                 BookFragment.this.getActivity().runOnUiThread(()->{
@@ -250,6 +256,12 @@ public class BookFragment extends Fragment {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<StadiumCategory>>>(){}.getType();
                 final ResponseResult<List<StadiumCategory>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    BookFragment.this.getActivity().runOnUiThread(()->{
+                        Toast.makeText(BookFragment.this.getContext(), responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 BookFragment.this.stadiumCategoryList = responseResult.getData();
                 Log.i("StadiumCategory", BookFragment.this.stadiumCategoryList.toString());
                 BookFragment.this.getActivity().runOnUiThread(()->{
@@ -288,6 +300,12 @@ public class BookFragment extends Fragment {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<Stadium>>>(){}.getType();
                 final ResponseResult<List<Stadium>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    BookFragment.this.getActivity().runOnUiThread(()->{
+                        Toast.makeText(BookFragment.this.getContext(), responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 List<Stadium> stadiumList = responseResult.getData();
                 Log.i("Stadium", stadiumList.toString());
                 // 访问第一页，或者追加

@@ -63,7 +63,7 @@ public class LoginActivity extends BaseActivity {
                     final ResponseResult<User> responseResult = gson.fromJson(responseString, type);
                     runOnUiThread(() -> {
                         Toast.makeText(LoginActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
-                        if (responseResult.getCode() == 200) {
+                        if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
                             // 登录成功
                             LoginUserInfoUtil.update(responseResult.getData());
                             LoginActivity.this.finish();

@@ -8,6 +8,8 @@ public class ResponseResult<E> {
     /** DATE字段转json格式 */
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    /** 操作成功的code */
+    public static final Integer SUCCESS = 200;
 
     /**
      * 状态码

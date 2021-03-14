@@ -132,7 +132,7 @@ public class StadiumBookItemListActivity extends BaseActivity {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<StadiumBookItem>>>(){}.getType();
                 final ResponseResult<List<StadiumBookItem>> responseResult = gson.fromJson(responseString, type);
-                if (responseResult.getCode() != 200) {
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
                     // 获取数据失败
                     StadiumBookItemListActivity.this.runOnUiThread(()->{
                         Toast.makeText(StadiumBookItemListActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();

@@ -70,7 +70,7 @@ public class SettingActivity extends BaseActivity {
                                 runOnUiThread(() -> {
                                     Toast.makeText(SettingActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
-                                if (responseResult.getCode() == 200) {
+                                if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
                                     // 注销成功，清除账号信息，隐藏退出登录按钮
                                     LoginUserInfoUtil.update(null);
                                     runOnUiThread(() -> {

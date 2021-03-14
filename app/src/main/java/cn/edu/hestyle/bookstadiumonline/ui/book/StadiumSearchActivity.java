@@ -128,6 +128,12 @@ public class StadiumSearchActivity extends BaseActivity {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<Stadium>>>(){}.getType();
                 final ResponseResult<List<Stadium>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    StadiumSearchActivity.this.runOnUiThread(()->{
+                        Toast.makeText(StadiumSearchActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 List<Stadium> stadiumList = responseResult.getData();
                 Log.i("Stadium", stadiumList.toString());
                 // 访问第一页，或者追加

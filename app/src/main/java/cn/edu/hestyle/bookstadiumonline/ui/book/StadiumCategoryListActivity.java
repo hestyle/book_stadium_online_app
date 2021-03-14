@@ -119,6 +119,12 @@ public class StadiumCategoryListActivity extends BaseActivity {
                 Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                 Type type =  new TypeToken<ResponseResult<List<StadiumCategory>>>(){}.getType();
                 final ResponseResult<List<StadiumCategory>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    StadiumCategoryListActivity.this.runOnUiThread(()->{
+                        Toast.makeText(StadiumCategoryListActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
                 List<StadiumCategory> stadiumCategoryList = responseResult.getData();
                 Log.i("StadiumCategory", stadiumCategoryList.toString());
                 // 访问第一页，或者追加
