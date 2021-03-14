@@ -187,6 +187,37 @@ public class StadiumBookListActivity extends BaseActivity {
     }
 
     /**
+     * 预约
+     * @param stadiumBookId     stadiumBookId
+     */
+    private void bookStadiumBook(Integer stadiumBookId) {
+        // 从服务器获取stadiumCategory
+        FormBody formBody = new FormBody.Builder()
+                .add("stadiumBookId", "" + stadiumBookId)
+                .build();
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/stadiumBookItem/add.do", null, formBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                StadiumBookListActivity.this.runOnUiThread(()->{
+                    Toast.makeText(StadiumBookListActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseString = response.body().string();
+                // 转json
+                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
+                final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                StadiumBookListActivity.this.runOnUiThread(()->{
+                    Toast.makeText(StadiumBookListActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    /**
      * 设置navigationBar
      */
     private void navigationBarInit(String title) {
@@ -198,7 +229,7 @@ public class StadiumBookListActivity extends BaseActivity {
         backTitleTextView.setOnClickListener(v -> finish());
     }
 
-    static class StadiumBookRecycleAdapter extends RecyclerView.Adapter<StadiumBookRecycleAdapter.StadiumBookViewHolder> {
+    class StadiumBookRecycleAdapter extends RecyclerView.Adapter<StadiumBookRecycleAdapter.StadiumBookViewHolder> {
         private Context context;
         private View inflater;
         private List<StadiumBook> stadiumBookList;
@@ -240,10 +271,12 @@ public class StadiumBookListActivity extends BaseActivity {
             } else {
                 holder.bookActionTextView.setBackgroundColor(Color.RED);
             }
-            // 点击事件
+            // 预约
             holder.bookActionTextView.setOnClickListener(v -> {
                 if (stadiumBook.getMaxBookCount() > stadiumBook.getNowBookCount()) {
-                    Toast.makeText(context, stadiumBook + "", Toast.LENGTH_SHORT).show();
+                    StadiumBookListActivity.this.bookStadiumBook(stadiumBook.getId());
+                } else {
+                    Toast.makeText(context, "该预约场次已无预约名额！", Toast.LENGTH_SHORT).show();
                 }
             });
             // 查询已预约用户
@@ -267,7 +300,7 @@ public class StadiumBookListActivity extends BaseActivity {
         }
 
         //内部类，绑定控件
-        static class StadiumBookViewHolder extends RecyclerView.ViewHolder {
+        class StadiumBookViewHolder extends RecyclerView.ViewHolder {
             public TextView startTimeTextView;
             public TextView endTimeTextView;
             public TextView maxBookCountTextView;
