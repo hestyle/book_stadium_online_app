@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.BaseActivity;
@@ -238,6 +237,8 @@ public class StadiumBookListActivity extends BaseActivity {
             holder.nowBookCountTextView.setText(String.format("%d", stadiumBook.getNowBookCount()));
             if (stadiumBook.getMaxBookCount() <= stadiumBook.getNowBookCount()) {
                 holder.bookActionTextView.setBackgroundColor(Color.GRAY);
+            } else {
+                holder.bookActionTextView.setBackgroundColor(Color.RED);
             }
             // 点击事件
             holder.bookActionTextView.setOnClickListener(v -> {
@@ -245,8 +246,13 @@ public class StadiumBookListActivity extends BaseActivity {
                     Toast.makeText(context, stadiumBook + "", Toast.LENGTH_SHORT).show();
                 }
             });
+            // 查询已预约用户
             holder.checkHadBookedUserTextView.setOnClickListener(v -> {
-                Toast.makeText(context, stadiumBook + "", Toast.LENGTH_SHORT).show();
+                if (stadiumBook.getId() != null) {
+                    Intent stadiumBookItemIntent = new Intent(context, StadiumBookItemListActivity.class);
+                    stadiumBookItemIntent.putExtra("stadiumBookId", stadiumBook.getId());
+                    context.startActivity(stadiumBookItemIntent);
+                }
             });
         }
 
