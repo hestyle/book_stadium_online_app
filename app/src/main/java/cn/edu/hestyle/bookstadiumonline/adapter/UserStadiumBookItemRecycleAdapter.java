@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserStadiumBookItem;
+import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 
@@ -67,7 +69,9 @@ public class UserStadiumBookItemRecycleAdapter extends RecyclerView.Adapter<User
         holder.stadiumBookedTimeTextView.setText(String.format("%s", simpleDateFormat.format(userStadiumBookItem.getStadiumBookedTime())));
         // 查看场馆
         holder.checkStadiumTextView.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了查看场馆 stadiumId = " + userStadiumBookItem.getStadiumId(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(context, StadiumDetailActivity.class);
+            intent.putExtra("stadiumId", userStadiumBookItem.getStadiumId());
+            context.startActivity(intent);
         });
         // 查看其他预约用户
         holder.checkHadBookedUserTextView.setOnClickListener(v -> {

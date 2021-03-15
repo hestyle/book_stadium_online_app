@@ -38,6 +38,7 @@ import okhttp3.FormBody;
 import okhttp3.Response;
 
 public class StadiumDetailActivity extends BaseActivity {
+    private Integer stadiumId;
     private Stadium stadium;
     private Banner stadiumBanner;
     private TextView titleTextView;
@@ -49,10 +50,16 @@ public class StadiumDetailActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stadium_detail);
         Intent intent = getIntent();
+        this.stadiumId = intent.getIntExtra("stadiumId", 0);
         this.stadium = (Stadium) intent.getSerializableExtra("Stadium");
         // 设置navigationBar
         if (this.stadium != null) {
+            if (stadium.getId() != null) {
+                this.stadiumId = stadium.getId();
+            }
             this.navigationBarInit(this.stadium.getName());
+        } else {
+            this.navigationBarInit("体育场馆");
         }
         this.stadiumBanner = findViewById(R.id.stadiumBanner);
         this.titleTextView = findViewById(R.id.titleTextView);
@@ -72,9 +79,9 @@ public class StadiumDetailActivity extends BaseActivity {
         // 查看所有评论
         TextView gotoStadiumAllCommentTextView = findViewById(R.id.gotoStadiumAllCommentTextView);
         gotoStadiumAllCommentTextView.setOnClickListener(v -> {
-            if (stadium != null && stadium.getId() != null) {
+            if (stadiumId != null) {
                 Intent stadiumCommentIntent = new Intent(StadiumDetailActivity.this, StadiumCommentListActivity.class);
-                stadiumCommentIntent.putExtra("stadiumId", stadium.getId());
+                stadiumCommentIntent.putExtra("stadiumId", stadiumId);
                 startActivity(stadiumCommentIntent);
             }
         });
@@ -99,11 +106,20 @@ public class StadiumDetailActivity extends BaseActivity {
         this.init();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 对于只传入了stadiumId参数，此时需要访问服务器
+        if (stadiumId != null && stadium == null) {
+            getStadiumByIdFromServer(stadiumId);
+        }
+    }
+
     /**
      * 选择体育场馆
      */
     private void selectStadiumBookAction() {
-        if (stadium != null && stadium.getId() != null) {
+        if (stadiumId != null) {
             Intent stadiumBookIntent = new Intent(StadiumDetailActivity.this, StadiumBookListActivity.class);
             stadiumBookIntent.putExtra("stadiumId", stadium.getId());
             stadiumBookIntent.putExtra("stadiumManagerId", stadium.getStadiumManagerId());
@@ -177,6 +193,7 @@ public class StadiumDetailActivity extends BaseActivity {
                     return;
                 }
                 StadiumDetailActivity.this.stadium = responseResult.getData();
+                StadiumDetailActivity.this.stadiumId = StadiumDetailActivity.this.stadium.getId();
                 Log.i("Stadium", responseResult.getData() + "");
                 StadiumDetailActivity.this.runOnUiThread(()->{
                     StadiumDetailActivity.this.init();
