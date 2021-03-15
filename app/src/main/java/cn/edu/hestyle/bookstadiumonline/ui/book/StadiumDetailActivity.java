@@ -81,14 +81,33 @@ public class StadiumDetailActivity extends BaseActivity {
         // 选择预约时段
         TextView selectStadiumBookTextView = findViewById(R.id.selectStadiumBookTextView);
         selectStadiumBookTextView.setOnClickListener(v -> {
-            if (stadium != null && stadium.getId() != null) {
-                Intent stadiumBookIntent = new Intent(StadiumDetailActivity.this, StadiumBookListActivity.class);
-                stadiumBookIntent.putExtra("stadiumId", stadium.getId());
-                startActivity(stadiumBookIntent);
-            }
+            StadiumDetailActivity.this.selectStadiumBookAction();
+        });
+
+        // 咨询场馆管理员
+        TextView stadiumManagerTextView = findViewById(R.id.stadiumManagerTextView);
+        stadiumManagerTextView.setOnClickListener(v -> {
+            Toast.makeText(StadiumDetailActivity.this, "点击了场馆管理员", Toast.LENGTH_SHORT).show();
+        });
+
+        // 立即预约action
+        TextView bookActionTextView = findViewById(R.id.bookActionTextView);
+        bookActionTextView.setOnClickListener(v -> {
+            StadiumDetailActivity.this.selectStadiumBookAction();
         });
 
         this.init();
+    }
+
+    /**
+     * 选择体育场馆
+     */
+    private void selectStadiumBookAction() {
+        if (stadium != null && stadium.getId() != null) {
+            Intent stadiumBookIntent = new Intent(StadiumDetailActivity.this, StadiumBookListActivity.class);
+            stadiumBookIntent.putExtra("stadiumId", stadium.getId());
+            startActivity(stadiumBookIntent);
+        }
     }
 
     /**
