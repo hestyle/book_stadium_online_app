@@ -1,4 +1,4 @@
-package cn.edu.hestyle.bookstadiumonline.ui.book.adapter;
+package cn.edu.hestyle.bookstadiumonline.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

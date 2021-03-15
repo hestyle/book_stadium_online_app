@@ -30,7 +30,7 @@ import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.Stadium;
 import cn.edu.hestyle.bookstadiumonline.entity.StadiumCategory;
-import cn.edu.hestyle.bookstadiumonline.ui.book.adapter.StadiumRecycleAdapter;
+import cn.edu.hestyle.bookstadiumonline.adapter.StadiumRecycleAdapter;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;

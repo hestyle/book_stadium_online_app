@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -51,6 +52,20 @@ public class MyFragment extends Fragment {
         this.avatarImageView = this.rootView.findViewById(R.id.avatarImageView);
         this.usernameTextView = this.rootView.findViewById(R.id.usernameTextView);
         this.scoreTextView = this.rootView.findViewById(R.id.scoreTextView);
+
+        // 查看我的预约action
+        ConstraintLayout myStadiumBookItemConstraintLayout = this.rootView.findViewById(R.id.myStadiumBookItemConstraintLayout);
+        myStadiumBookItemConstraintLayout.setOnClickListener(v -> {
+            User loginUser = LoginUserInfoUtil.getLoginUser();
+            // 判断是否登录
+            if (loginUser == null || loginUser.getId() == null) {
+                Toast.makeText(MyFragment.this.getContext(), "请先进行登录！", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(MyFragment.this.getContext(), MyStadiumBookItemListActivity.class);
+                intent.putExtra("userId", loginUser.getId());
+                startActivity(intent);
+            }
+        });
 
         return this.rootView;
     }

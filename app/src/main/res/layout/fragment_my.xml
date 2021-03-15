@@ -124,13 +124,13 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
             <!-- 我的预约 -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/myBookConstraintLayout"
+                android:id="@+id/myStadiumBookItemConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/border">
 
                 <TextView
-                    android:id="@+id/myBookTextView"
+                    android:id="@+id/myStadiumBookItemTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"

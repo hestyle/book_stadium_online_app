@@ -14,7 +14,8 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Book_stadium_online_app">
-        <activity android:name=".ui.book.StadiumBookItemListActivity"></activity>
+        <activity android:name=".ui.my.MyStadiumBookItemListActivity"></activity>
+        <activity android:name=".ui.book.StadiumBookItemListActivity" />
         <activity android:name=".ui.book.StadiumBookListActivity" />
         <activity android:name=".ui.book.StadiumCommentListActivity" />
         <activity android:name=".ui.book.StadiumDetailActivity" />
