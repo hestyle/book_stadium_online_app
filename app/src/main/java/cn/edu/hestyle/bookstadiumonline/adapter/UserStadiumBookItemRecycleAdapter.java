@@ -18,6 +18,7 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserStadiumBookItem;
+import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumBookItemListActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
@@ -75,7 +76,13 @@ public class UserStadiumBookItemRecycleAdapter extends RecyclerView.Adapter<User
         });
         // 查看其他预约用户
         holder.checkHadBookedUserTextView.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了查看预约用户 stadiumBookId = " + userStadiumBookItem.getStadiumBookId(), Toast.LENGTH_SHORT).show();
+            if (userStadiumBookItem.getStadiumBookId() != null) {
+                Intent stadiumBookItemIntent = new Intent(context, StadiumBookItemListActivity.class);
+                stadiumBookItemIntent.putExtra("stadiumBookId", userStadiumBookItem.getStadiumBookId());
+                context.startActivity(stadiumBookItemIntent);
+            } else {
+                Toast.makeText(context, "数据错误，未传入stadiumBookId！userStadiumBookItem = " + userStadiumBookItem, Toast.LENGTH_SHORT).show();
+            }
         });
         // 评论场馆or查看评论
         if (userStadiumBookItem.getStadiumCommentId() != null) {
