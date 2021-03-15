@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,6 +46,7 @@ import okhttp3.Response;
 
 public class StadiumBookListActivity extends BaseActivity {
     private Integer stadiumId;
+    private Integer stadiumManagerId;
     private TextView tipsTextView;
     /** 一页的数量 */
     private static final Integer PER_PAGE_COUNT = 10;
@@ -60,6 +63,7 @@ public class StadiumBookListActivity extends BaseActivity {
 
         Intent intent = getIntent();
         this.stadiumId = intent.getIntExtra("stadiumId", 0);
+        this.stadiumManagerId = intent.getIntExtra("stadiumManagerId", 0);
 
         this.navigationBarInit("场馆预约");
 
@@ -227,12 +231,27 @@ public class StadiumBookListActivity extends BaseActivity {
      * 设置navigationBar
      */
     private void navigationBarInit(String title) {
+        ConstraintLayout commonTitleConstraintLayout = findViewById(R.id.stadium_book_list_navigation_bar);
         // 设置title
         TextView titleTextView = this.findViewById(R.id.titleTextView);
         titleTextView.setText(title);
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(v -> finish());
+        // rightStadiumManager按钮
+        ImageButton rightStadiumManagerImageButton = new ImageButton(this);
+        rightStadiumManagerImageButton.setBackgroundColor(Color.TRANSPARENT);
+        rightStadiumManagerImageButton.setImageResource(R.drawable.ic_stadium_manager_white);
+        ConstraintLayout.LayoutParams rightStadiumManagerLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
+        rightStadiumManagerLayoutParams.rightMargin = 15;
+        rightStadiumManagerLayoutParams.endToEnd = R.id.stadium_book_list_navigation_bar;
+        rightStadiumManagerLayoutParams.topToTop = R.id.stadium_book_list_navigation_bar;
+        rightStadiumManagerLayoutParams.bottomToBottom = R.id.stadium_book_list_navigation_bar;
+        rightStadiumManagerImageButton.setLayoutParams(rightStadiumManagerLayoutParams);
+        rightStadiumManagerImageButton.setOnClickListener(v -> {
+            Toast.makeText(StadiumBookListActivity.this, "点击了场馆管理员 " + StadiumBookListActivity.this.stadiumManagerId, Toast.LENGTH_SHORT).show();
+        });
+        commonTitleConstraintLayout.addView(rightStadiumManagerImageButton);
     }
 
     class StadiumBookRecycleAdapter extends RecyclerView.Adapter<StadiumBookRecycleAdapter.StadiumBookViewHolder> {

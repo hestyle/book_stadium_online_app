@@ -106,6 +106,7 @@ public class StadiumDetailActivity extends BaseActivity {
         if (stadium != null && stadium.getId() != null) {
             Intent stadiumBookIntent = new Intent(StadiumDetailActivity.this, StadiumBookListActivity.class);
             stadiumBookIntent.putExtra("stadiumId", stadium.getId());
+            stadiumBookIntent.putExtra("stadiumManagerId", stadium.getStadiumManagerId());
             startActivity(stadiumBookIntent);
         }
     }
