@@ -21,6 +21,7 @@ import cn.edu.hestyle.bookstadiumonline.entity.UserStadiumBookItem;
 import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumBookItemListActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.MyStadiumCommentDetailActivity;
+import cn.edu.hestyle.bookstadiumonline.ui.my.StadiumCommentingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 
@@ -97,7 +98,10 @@ public class UserStadiumBookItemRecycleAdapter extends RecyclerView.Adapter<User
         } else {
             holder.stadiumCommentTextView.setText("评论场馆");
             holder.stadiumCommentTextView.setOnClickListener(v -> {
-                Toast.makeText(context, "点击了评论场馆 stadiumId = " + userStadiumBookItem.getStadiumId(), Toast.LENGTH_SHORT).show();
+                // 跳转到评论页面
+                Intent stadiumCommentingIntent = new Intent(context, StadiumCommentingActivity.class);
+                stadiumCommentingIntent.putExtra("UserStadiumBookItem", userStadiumBookItem);
+                context.startActivity(stadiumCommentingIntent);
             });
         }
     }
