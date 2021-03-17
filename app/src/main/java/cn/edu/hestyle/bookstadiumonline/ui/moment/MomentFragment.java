@@ -36,6 +36,7 @@ import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.adapter.UserSportMomentRecycleAdapter;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
@@ -190,6 +191,11 @@ public class MomentFragment extends Fragment {
         leftAddImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 判断是否登录
+                if (LoginUserInfoUtil.getLoginUser() == null) {
+                    Toast.makeText(getContext(), "请先进行登录！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent intent = new Intent(getContext(), UserSportMomentAddActivity.class);
                 startActivity(intent);
             }
