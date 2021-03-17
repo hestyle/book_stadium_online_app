@@ -52,6 +52,9 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
     public void onBindViewHolder(UserSportMomentRecycleAdapter.UserSportMomentItemViewHolder holder, int position) {
         // 将数据和控件绑定
         UserSportMoment userSportMoment = userSportMomentList.get(position);
+        holder.userInfoConstraintLayout.setOnClickListener(v -> {
+            Toast.makeText(context, "点击了查看用户 userId = " + userSportMoment.getUserId(), Toast.LENGTH_SHORT).show();
+        });
         // 用户信息
         if (userSportMoment.getUserAvatarPath() != null && userSportMoment.getUserAvatarPath().length() != 0) {
             Glide.with(inflater.getContext())
@@ -59,7 +62,13 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
                     .into(holder.userAvatarImageView);
         }
         holder.usernameTextView.setText(String.format("%s", userSportMoment.getUsername()));
+        holder.chatActionTextView.setOnClickListener(v -> {
+            Toast.makeText(context, "点击了私信用户 userId = " + userSportMoment.getUserId(), Toast.LENGTH_SHORT).show();
+        });
         // 动态信息
+        holder.userSportMomentInfoConstraintLayout.setOnClickListener(v -> {
+            Toast.makeText(context, "点击了动态详情 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+        });
         holder.contentTextView.setText(String.format("%s", userSportMoment.getContent()));
         if (userSportMoment.getImagePaths() != null && userSportMoment.getImagePaths().length() != 0) {
             String[] imagePaths = userSportMoment.getImagePaths().split(",");
@@ -124,9 +133,12 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
     }
 
     //内部类，绑定控件
-    static class UserSportMomentItemViewHolder extends RecyclerView.ViewHolder{
+    static class UserSportMomentItemViewHolder extends RecyclerView.ViewHolder {
+        public ConstraintLayout userInfoConstraintLayout;
         public ImageView userAvatarImageView;
         public TextView usernameTextView;
+        public TextView chatActionTextView;
+        public ConstraintLayout userSportMomentInfoConstraintLayout;
         public TextView contentTextView;
         public ConstraintLayout imageConstraintLayout;
         public ImageView oneImageView;
@@ -139,8 +151,11 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
 
         public UserSportMomentItemViewHolder(View itemView) {
             super(itemView);
+            userInfoConstraintLayout = itemView.findViewById(R.id.userInfoConstraintLayout);
             userAvatarImageView = itemView.findViewById(R.id.userAvatarImageView);
             usernameTextView = itemView.findViewById(R.id.usernameTextView);
+            chatActionTextView = itemView.findViewById(R.id.chatActionTextView);
+            userSportMomentInfoConstraintLayout = itemView.findViewById(R.id.userSportMomentInfoConstraintLayout);
             contentTextView = itemView.findViewById(R.id.contentTextView);
             imageConstraintLayout = itemView.findViewById(R.id.imageConstraintLayout);
             oneImageView = itemView.findViewById(R.id.oneImageView);
