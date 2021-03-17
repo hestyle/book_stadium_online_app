@@ -3,18 +3,31 @@ package cn.edu.hestyle.bookstadiumonline.ui.my;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 
 import cn.edu.hestyle.bookstadiumonline.LoginActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
@@ -22,6 +35,11 @@ import cn.edu.hestyle.bookstadiumonline.entity.User;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.SettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
+import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
+import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MyFragment extends Fragment {
     private View rootView;
@@ -30,6 +48,7 @@ public class MyFragment extends Fragment {
     private ImageView avatarImageView;
     private TextView usernameTextView;
     private TextView scoreTextView;
+    private SmartRefreshLayout myFragmentSmartRefreshLayout;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,6 +70,28 @@ public class MyFragment extends Fragment {
         this.avatarImageView = this.rootView.findViewById(R.id.avatarImageView);
         this.usernameTextView = this.rootView.findViewById(R.id.usernameTextView);
         this.scoreTextView = this.rootView.findViewById(R.id.scoreTextView);
+        this.myFragmentSmartRefreshLayout = this.rootView.findViewById(R.id.myFragmentSmartRefreshLayout);
+        myFragmentSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                // 刷新(登录账号信息)
+                MyFragment.this.getInfo();
+            }
+        });
+
+        // 查看我的预约action
+        ConstraintLayout myStadiumBookItemConstraintLayout = this.rootView.findViewById(R.id.myStadiumBookItemConstraintLayout);
+        myStadiumBookItemConstraintLayout.setOnClickListener(v -> {
+            User loginUser = LoginUserInfoUtil.getLoginUser();
+            // 判断是否登录
+            if (loginUser == null || loginUser.getId() == null) {
+                Toast.makeText(MyFragment.this.getContext(), "请先进行登录！", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(MyFragment.this.getContext(), MyStadiumBookItemListActivity.class);
+                intent.putExtra("userId", loginUser.getId());
+                startActivity(intent);
+            }
+        });
 
         return this.rootView;
     }
@@ -58,6 +99,13 @@ public class MyFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        init();
+    }
+
+    /**
+     * 页面初始化
+     */
+    private void init() {
         User loginUser = LoginUserInfoUtil.getLoginUser();
         if (loginUser != null) {
             this.noLoginConstraintLayout.setVisibility(View.INVISIBLE);
@@ -76,6 +124,50 @@ public class MyFragment extends Fragment {
             this.noLoginConstraintLayout.setVisibility(View.VISIBLE);
             // 设置默认图片
             this.avatarImageView.setImageResource(R.drawable.ic_default_avatar);
+        }
+    }
+
+    private void getInfo() {
+        User user = LoginUserInfoUtil.getLoginUser();
+        if (user != null) {
+            // 从服务器获取登录账号信息
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/user/getInfo.do", null, null, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    MyFragment.this.getActivity().runOnUiThread(()->{
+                        Toast.makeText(MyFragment.this.getContext(), "网络访问失败！", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type =  new TypeToken<ResponseResult<User>>(){}.getType();
+                    final ResponseResult<User> responseResult = gson.fromJson(responseString, type);
+                    if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        // 获取数据失败
+                        MyFragment.this.getActivity().runOnUiThread(()->{
+                            if (responseResult.getCode().equals(ResponseResult.TOKEN_VERIFICATION_FAILED_Code)) {
+                                // token未通过验证(退出登录)
+                                LoginUserInfoUtil.update(null);
+                                MyFragment.this.init();
+                            }
+                            Toast.makeText(MyFragment.this.getContext(), responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                            myFragmentSmartRefreshLayout.finishRefresh();
+                        });
+                        return;
+                    }
+                    User loginUser = responseResult.getData();
+                    Log.i("MyFragment", "loginUser = " + loginUser);
+                    MyFragment.this.getActivity().runOnUiThread(()->{
+                        LoginUserInfoUtil.update(loginUser);
+                        MyFragment.this.init();
+                        myFragmentSmartRefreshLayout.finishRefresh();
+                    });
+                }
+            });
         }
     }
 

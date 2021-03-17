@@ -10,14 +10,20 @@
         android:id="@+id/my_fragment_navigation_bar"
         layout="@layout/include_common_navigation_bar" />
 
-    <ScrollView
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/myFragmentSmartRefreshLayout"
         android:layout_width="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_fragment_navigation_bar"
         android:layout_height="0dp"
-        android:background="#e6e6e6">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/my_fragment_navigation_bar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--srlAccentColor srlPrimaryColor 将会改变 Header 和 Footer 的主题颜色-->
+        <!--srlEnablePreviewInEditMode 可以开启和关闭预览功能-->
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -124,13 +130,13 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
             <!-- 我的预约 -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/myBookConstraintLayout"
+                android:id="@+id/myStadiumBookItemConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/border">
 
                 <TextView
-                    android:id="@+id/myBookTextView"
+                    android:id="@+id/myStadiumBookItemTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
@@ -189,5 +195,6 @@
                     android:textSize="16sp"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
-    </ScrollView>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

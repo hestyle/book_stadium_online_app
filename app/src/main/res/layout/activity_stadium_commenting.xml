@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.my.StadiumCommentingActivity">
+
+    <include android:id="@+id/stadium_commenting_detail_navigation_bar"
+        layout="@layout/include_back_navigation_bar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/stadium_commenting_detail_navigation_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="15dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/border_title_bottom">
+
+                <ImageView
+                    android:id="@+id/stadiumImageView"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:src="@drawable/ic_no_image" />
+
+                <TextView
+                    android:id="@+id/stadiumNameTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/stadiumImageView"
+                    android:text="场馆名称："
+                    android:textSize="15sp"/>
+                <TextView
+                    android:id="@+id/stadiumNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/stadiumNameTitleTextView"
+                    android:text="stadiumName"
+                    android:textSize="15sp"/>
+
+                <TextView
+                    android:id="@+id/stadiumAddressTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="@id/stadiumImageView"
+                    app:layout_constraintLeft_toLeftOf="@+id/stadiumNameTitleTextView"
+                    android:text="场馆地址："
+                    android:textSize="15sp"/>
+                <TextView
+                    android:id="@+id/stadiumAddressTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/stadiumAddressTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@id/stadiumAddressTitleTextView"
+                    android:text="stadiumAddress"
+                    android:textSize="15sp"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:id="@+id/stadiumCommentStarCountTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:text="评价星级："
+                    android:textSize="15sp"/>
+
+                <ImageView
+                    android:id="@+id/oneStarImageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintTop_toTopOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintBottom_toBottomOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@+id/stadiumCommentStarCountTitleTextView"
+                    android:src="@drawable/ic_star_empty" />
+
+                <ImageView
+                    android:id="@+id/twoStarImageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintTop_toTopOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintBottom_toBottomOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@id/oneStarImageView"
+                    android:src="@drawable/ic_star_empty" />
+
+                <ImageView
+                    android:id="@+id/threeStarImageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintTop_toTopOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintBottom_toBottomOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@id/twoStarImageView"
+                    android:src="@drawable/ic_star_empty" />
+
+                <ImageView
+                    android:id="@+id/fourStarImageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintTop_toTopOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintBottom_toBottomOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@id/threeStarImageView"
+                    android:src="@drawable/ic_star_empty" />
+
+                <ImageView
+                    android:id="@+id/fiveStarImageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintTop_toTopOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintBottom_toBottomOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@id/fourStarImageView"
+                    android:src="@drawable/ic_star_empty" />
+
+                <TextView
+                    android:id="@+id/stadiumCommentContentTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/stadiumCommentStarCountTitleTextView"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:text="评价内容："
+                    android:textSize="15sp"/>
+
+                <EditText
+                    android:id="@+id/stadiumCommentContentEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    app:layout_constraintTop_toTopOf="@+id/stadiumCommentContentTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@+id/stadiumCommentContentTitleTextView"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:hint="请输入评价内容"
+                    android:textSize="15sp"
+                    android:background="@drawable/border_all_around_and_radio"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/saveStadiumCommentButton"
+                android:layout_marginTop="10dp"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="保存" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

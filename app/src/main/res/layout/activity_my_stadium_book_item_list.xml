@@ -4,18 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.moment.MomentFragment">
+    tools:context=".ui.my.MyStadiumBookItemListActivity">
 
-    <include android:id="@+id/user_sport_moment_list_navigation_bar"
-        layout="@layout/include_common_navigation_bar"/>
+    <include android:id="@+id/my_stadium_book_item_list_navigation_bar"
+        layout="@layout/include_back_navigation_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+    <TextView
+        android:id="@+id/tipsTextView"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="暂无预约数据" />
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/userSportMomentSmartRefreshLayout"
+        android:id="@+id/userStadiumBookItemSmartRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/user_sport_moment_list_navigation_bar"
+        app:layout_constraintTop_toBottomOf="@id/my_stadium_book_item_list_navigation_bar"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <!--srlAccentColor srlPrimaryColor 将会改变 Header 和 Footer 的主题颜色-->
@@ -24,10 +39,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userSportMomentRecyclerView"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/userStadiumBookItemRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
 
         <com.scwang.smartrefresh.layout.footer.ClassicsFooter
             android:layout_width="match_parent"

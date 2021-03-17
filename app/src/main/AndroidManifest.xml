@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 读写访问权限 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -14,7 +15,11 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Book_stadium_online_app">
-        <activity android:name=".ui.book.StadiumBookItemListActivity"></activity>
+        <activity android:name=".ui.moment.UserSportMomentAddActivity"></activity>
+        <activity android:name=".ui.my.StadiumCommentingActivity" />
+        <activity android:name=".ui.my.MyStadiumCommentDetailActivity" />
+        <activity android:name=".ui.my.MyStadiumBookItemListActivity" />
+        <activity android:name=".ui.book.StadiumBookItemListActivity" />
         <activity android:name=".ui.book.StadiumBookListActivity" />
         <activity android:name=".ui.book.StadiumCommentListActivity" />
         <activity android:name=".ui.book.StadiumDetailActivity" />
