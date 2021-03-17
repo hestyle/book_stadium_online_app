@@ -10,6 +10,8 @@ public class ResponseResult<E> {
     public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     /** 操作成功的code */
     public static final Integer SUCCESS = 200;
+    /** Token未通过验证异常 */
+    public static final Integer TOKEN_VERIFICATION_FAILED_Code = 410;
 
     /**
      * 状态码
