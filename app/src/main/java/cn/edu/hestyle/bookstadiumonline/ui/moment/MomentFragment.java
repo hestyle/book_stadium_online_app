@@ -1,10 +1,12 @@
 package cn.edu.hestyle.bookstadiumonline.ui.moment;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -170,10 +173,28 @@ public class MomentFragment extends Fragment {
      * 设置navigationBar
      */
     private void navigationBarInit(String title) {
+        ConstraintLayout commonTitleConstraintLayout = this.rootView.findViewById(R.id.user_sport_moment_list_navigation_bar);
         // 设置title
         TextView titleTextView = this.rootView.findViewById(R.id.titleTextView);
         titleTextView.setText(title);
-
+        // 设置left add
+        ImageButton leftAddImageButton = new ImageButton(getActivity());
+        leftAddImageButton.setBackgroundColor(Color.TRANSPARENT);
+        leftAddImageButton.setImageResource(R.drawable.ic_add_white);
+        ConstraintLayout.LayoutParams leftAddLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
+        leftAddLayoutParams.leftMargin = 15;
+        leftAddLayoutParams.startToStart = R.id.user_sport_moment_list_navigation_bar;
+        leftAddLayoutParams.topToTop = R.id.user_sport_moment_list_navigation_bar;
+        leftAddLayoutParams.bottomToBottom = R.id.user_sport_moment_list_navigation_bar;
+        leftAddImageButton.setLayoutParams(leftAddLayoutParams);
+        leftAddImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), UserSportMomentAddActivity.class);
+                startActivity(intent);
+            }
+        });
+        commonTitleConstraintLayout.addView(leftAddImageButton);
     }
 
 }
