@@ -76,7 +76,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             }
             if (imagePaths.length > 2) {
                 Glide.with(inflater.getContext())
-                        .load(ServerSettingActivity.getServerHostUrl() + imagePaths[1])
+                        .load(ServerSettingActivity.getServerHostUrl() + imagePaths[2])
                         .into(holder.threeImageView);
                 holder.threeImageView.setVisibility(View.VISIBLE);
             } else {
