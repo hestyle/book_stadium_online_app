@@ -70,8 +70,8 @@ public class SettingActivity extends BaseActivity {
                                 runOnUiThread(() -> {
                                     Toast.makeText(SettingActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
-                                if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
-                                    // 注销成功，清除账号信息，隐藏退出登录按钮
+                                if (responseResult.getCode().equals(ResponseResult.SUCCESS) || responseResult.getCode().equals(ResponseResult.TOKEN_VERIFICATION_FAILED_Code)) {
+                                    // 注销成功，清除账号信息，隐藏退出登录按钮，若token未通过验证，有需要强制清除登录账号信息
                                     LoginUserInfoUtil.update(null);
                                     runOnUiThread(() -> {
                                         SettingActivity.this.logoutButton.setVisibility(View.INVISIBLE);
