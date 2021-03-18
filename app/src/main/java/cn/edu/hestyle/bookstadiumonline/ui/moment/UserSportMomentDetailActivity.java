@@ -118,7 +118,7 @@ public class UserSportMomentDetailActivity extends BaseActivity {
         // 禁止userSportMomentCommentRecyclerView内部滑动
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false){
             @Override
-            public boolean canScrollHorizontally() {
+            public boolean canScrollVertically() {
                 return false;
             }
         };
