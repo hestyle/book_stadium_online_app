@@ -2,6 +2,7 @@ package cn.edu.hestyle.bookstadiumonline.adapter;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import java.util.List;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
@@ -120,6 +122,45 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             holder.likeTextView.setText(String.format("(%d)", userSportMoment.getLikeCount()));
         } else {
             holder.likeTextView.setText("抢首赞");
+        }
+        // 判断当前登录账号是否点过赞
+        if (LoginUserInfoUtil.getLoginUser() != null) {
+            FormBody formBody = new FormBody.Builder()
+                    .add("sportMomentId", "" + userSportMoment.getSportMomentId())
+                    .build();
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/hasLiked.do", null, formBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    activityContext.runOnUiThread(()->{
+                        Toast.makeText(activityContext, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type =  new TypeToken<ResponseResult<Boolean>>(){}.getType();
+                    final ResponseResult<Boolean> responseResult = gson.fromJson(responseString, type);
+                    Log.w("ResponseResult", "" + responseResult);
+                    if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        Boolean flag = responseResult.getData();
+                        if (flag) {
+                            // 当前登录账号已点赞
+                            activityContext.runOnUiThread(()->{
+                                Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_liked);
+                                holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            });
+                        }
+                        return;
+                    }
+                    activityContext.runOnUiThread(()->{
+                        Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_like);
+                        holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                    });
+                }
+            });
         }
         holder.likeTextView.setOnClickListener(v -> {
             Integer sportMomentId = userSportMoment.getSportMomentId();
