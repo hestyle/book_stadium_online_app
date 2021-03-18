@@ -83,7 +83,7 @@ public class MomentFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         userSportMomentRecyclerView.setLayoutManager(linearLayoutManager);
-        userSportMomentRecycleAdapter = new UserSportMomentRecycleAdapter(this.getContext(), userSportMomentList);
+        userSportMomentRecycleAdapter = new UserSportMomentRecycleAdapter(this.getActivity(), userSportMomentList);
         userSportMomentRecyclerView.setAdapter(userSportMomentRecycleAdapter);
 
         return rootView;

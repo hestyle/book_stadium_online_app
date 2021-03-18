@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.adapter;
 
-import android.content.Context;
+import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,22 +13,34 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.Response;
 
 public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSportMomentRecycleAdapter.UserSportMomentItemViewHolder> {
-    private Context context;
+    private Activity activityContext;
     private View inflater;
     private List<UserSportMoment> userSportMomentList;
 
-    public UserSportMomentRecycleAdapter(Context context, List<UserSportMoment> userSportMomentList){
-        this.context = context;
+    public UserSportMomentRecycleAdapter(Activity activityContext, List<UserSportMoment> userSportMomentList){
+        this.activityContext = activityContext;
         this.userSportMomentList = userSportMomentList;
     }
 
@@ -44,7 +57,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
     @Override
     public UserSportMomentRecycleAdapter.UserSportMomentItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //创建ViewHolder，返回每一项的布局
-        inflater = LayoutInflater.from(context).inflate(R.layout.item_user_sport_moment_recyclerview, parent, false);
+        inflater = LayoutInflater.from(activityContext).inflate(R.layout.item_user_sport_moment_recyclerview, parent, false);
         return new UserSportMomentItemViewHolder(inflater);
     }
 
@@ -53,7 +66,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
         // 将数据和控件绑定
         UserSportMoment userSportMoment = userSportMomentList.get(position);
         holder.userInfoConstraintLayout.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了查看用户 userId = " + userSportMoment.getUserId(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activityContext, "点击了查看用户 userId = " + userSportMoment.getUserId(), Toast.LENGTH_SHORT).show();
         });
         // 用户信息
         if (userSportMoment.getUserAvatarPath() != null && userSportMoment.getUserAvatarPath().length() != 0) {
@@ -63,11 +76,11 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
         }
         holder.usernameTextView.setText(String.format("%s", userSportMoment.getUsername()));
         holder.chatActionTextView.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了私信用户 userId = " + userSportMoment.getUserId(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activityContext, "点击了私信用户 userId = " + userSportMoment.getUserId(), Toast.LENGTH_SHORT).show();
         });
         // 动态信息
         holder.userSportMomentInfoConstraintLayout.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了动态详情 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activityContext, "点击了动态详情 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
         });
         holder.contentTextView.setText(String.format("%s", userSportMoment.getContent()));
         if (userSportMoment.getImagePaths() != null && userSportMoment.getImagePaths().length() != 0) {
@@ -100,7 +113,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
 
         // 举报
         holder.reportTextView.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了举报 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activityContext, "点击了举报 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
         });
         // 点赞
         if (userSportMoment.getLikeCount() > 0) {
@@ -109,7 +122,45 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             holder.likeTextView.setText("抢首赞");
         }
         holder.likeTextView.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了点赞 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            Integer sportMomentId = userSportMoment.getSportMomentId();
+            if (sportMomentId != null) {
+                FormBody formBody = new FormBody.Builder()
+                        .add("sportMomentId", "" + sportMomentId)
+                        .build();
+                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/like.do", null, formBody, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        activityContext.runOnUiThread(()->{
+                            Toast.makeText(activityContext, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseString = response.body().string();
+                        // 转json
+                        Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                        Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
+                        final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                        if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                            activityContext.runOnUiThread(()->{
+                                Toast.makeText(activityContext, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                            return;
+                        } else {
+                            // 点赞成功，修改已店点赞图标
+                            activityContext.runOnUiThread(()->{
+                                userSportMoment.setLikeCount(userSportMoment.getLikeCount() + 1);
+                                Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_liked);
+                                holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                                holder.likeTextView.setText(String.format("(%d)", userSportMoment.getLikeCount()));
+                            });
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(activityContext, "程序发生未知错误！", Toast.LENGTH_SHORT).show();
+            }
         });
         // 评论
         if (userSportMoment.getCommentCount() > 0) {
@@ -118,7 +169,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             holder.commentTextView.setText("抢沙发");
         }
         holder.commentTextView.setOnClickListener(v -> {
-            Toast.makeText(context, "点击了评论 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activityContext, "点击了评论 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
         });
     }
 
