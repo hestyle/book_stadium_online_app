@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
+import cn.edu.hestyle.bookstadiumonline.ui.moment.UserSportMomentDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -82,7 +84,14 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
         });
         // 动态信息
         holder.userSportMomentInfoConstraintLayout.setOnClickListener(v -> {
-            Toast.makeText(activityContext, "点击了动态详情 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            // 跳转到详情页面
+            if (LoginUserInfoUtil.getLoginUser() != null) {
+                Intent intent = new Intent(activityContext, UserSportMomentDetailActivity.class);
+                intent.putExtra("UserSportMoment", userSportMoment);
+                activityContext.startActivity(intent);
+            } else {
+                Toast.makeText(activityContext, "请先进行登录！", Toast.LENGTH_SHORT).show();
+            }
         });
         holder.contentTextView.setText(String.format("%s", userSportMoment.getContent()));
         if (userSportMoment.getImagePaths() != null && userSportMoment.getImagePaths().length() != 0) {
@@ -172,7 +181,14 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             holder.commentTextView.setText("抢沙发");
         }
         holder.commentTextView.setOnClickListener(v -> {
-            Toast.makeText(activityContext, "点击了评论 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            // 跳转到详情页面
+            if (LoginUserInfoUtil.getLoginUser() != null) {
+                Intent intent = new Intent(activityContext, UserSportMomentDetailActivity.class);
+                intent.putExtra("UserSportMoment", userSportMoment);
+                activityContext.startActivity(intent);
+            } else {
+                Toast.makeText(activityContext, "请先进行登录！", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
