@@ -176,7 +176,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
         }
         // 评论
         if (userSportMoment.getCommentCount() > 0) {
-            holder.commentTextView.setText(String.format("(%d)", userSportMoment.getCommentCount()));
+            holder.commentTextView.setText(String.format(" %d", userSportMoment.getCommentCount()));
         } else {
             holder.commentTextView.setText("抢沙发");
         }
@@ -352,7 +352,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             if (likeCount == null || likeCount == 0) {
                 likeTextView.setText("抢首赞");
             } else {
-                likeTextView.setText(String.format("(%d)", likeCount));
+                likeTextView.setText(String.format(" %d", likeCount));
             }
         }
     }
