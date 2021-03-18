@@ -115,8 +115,13 @@ public class UserSportMomentDetailActivity extends BaseActivity {
                 UserSportMomentDetailActivity.this.getNextPageUserSportMomentCommentFromServer();
             }
         });
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        // 禁止userSportMomentCommentRecyclerView内部滑动
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false){
+            @Override
+            public boolean canScrollHorizontally() {
+                return false;
+            }
+        };
         userSportMomentCommentRecyclerView.setLayoutManager(linearLayoutManager);
         userSportMomentCommentRecycleAdapter = new UserSportMomentCommentRecycleAdapter(this, userSportMomentCommentList);
         userSportMomentCommentRecyclerView.setAdapter(userSportMomentCommentRecycleAdapter);
