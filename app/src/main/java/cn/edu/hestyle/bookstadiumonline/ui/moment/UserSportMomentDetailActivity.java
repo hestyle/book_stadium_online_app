@@ -539,50 +539,55 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             holder.likeTextView.setOnClickListener(v -> {
                 sportMomentCommentLikeAction(holder, position);
             });
-//            // 判断当前登录账号是否点过赞
-//            if (LoginUserInfoUtil.getLoginUser() != null) {
-//                FormBody formBody = new FormBody.Builder()
-//                        .add("sportMomentId", "" + userSportMoment.getSportMomentId())
-//                        .build();
-//                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/hasLiked.do", null, formBody, new Callback() {
-//                    @Override
-//                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                        activityContext.runOnUiThread(() -> {
-//                            Toast.makeText(activityContext, "网络访问失败！", Toast.LENGTH_SHORT).show();
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                        String responseString = response.body().string();
-//                        // 转json
-//                        Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
-//                        Type type = new TypeToken<ResponseResult<Boolean>>() {
-//                        }.getType();
-//                        final ResponseResult<Boolean> responseResult = gson.fromJson(responseString, type);
-//                        Log.w("ResponseResult", "" + responseResult);
-//                        if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
-//                            Boolean flag = responseResult.getData();
-//                            if (flag) {
-//                                // 当前登录账号已点赞
-//                                activityContext.runOnUiThread(() -> {
-//                                    Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_liked);
-//                                    holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-//                                    // 修改点击事件(修改为取消点赞)
+            // 判断当前登录账号是否点过赞
+            if (LoginUserInfoUtil.getLoginUser() != null && userSportMomentComment.getId() != null) {
+                FormBody formBody = new FormBody.Builder()
+                        .add("sportMomentCommentId", "" + userSportMomentComment.getId())
+                        .build();
+                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMomentComment/hasLiked.do", null, formBody, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        activityContext.runOnUiThread(() -> {
+                            Toast.makeText(activityContext, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseString = response.body().string();
+                        // 转json
+                        Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                        Type type = new TypeToken<ResponseResult<Boolean>>() {
+                        }.getType();
+                        final ResponseResult<Boolean> responseResult = gson.fromJson(responseString, type);
+                        Log.w("ResponseResult", "" + responseResult);
+                        if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                            Boolean flag = responseResult.getData();
+                            if (flag) {
+                                // 当前登录账号已点赞
+                                activityContext.runOnUiThread(() -> {
+                                    Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_liked);
+                                    holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                                    // 修改点击事件(修改为取消点赞)
 //                                    holder.likeTextView.setOnClickListener(v -> {
 //                                        sportMomentDislikeAction(holder, position);
 //                                    });
-//                                });
-//                            }
-//                            return;
-//                        }
-//                        activityContext.runOnUiThread(() -> {
-//                            Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_like);
-//                            holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-//                        });
-//                    }
-//                });
-//            }
+                                });
+                            }
+                            return;
+                        }
+                        activityContext.runOnUiThread(() -> {
+                            // 当前账号未点赞该评论
+                            Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_like);
+                            holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            // 将点击事件设置为 点赞action
+                            holder.likeTextView.setOnClickListener(v -> {
+                                sportMomentCommentLikeAction(holder, position);
+                            });
+                        });
+                    }
+                });
+            }
             // 回复
             holder.commentTextView.setText("回复");
             holder.commentTextView.setOnClickListener(v -> {
