@@ -537,8 +537,7 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             // 点赞
             holder.setLikeCount(userSportMomentComment.getLikeCount());
             holder.likeTextView.setOnClickListener(v -> {
-                Toast.makeText(activityContext, "点击了点赞 sportMomentCommentId = " + userSportMomentComment.getId(), Toast.LENGTH_SHORT).show();
-                //sportMomentCommentLikeAction(holder, position);
+                sportMomentCommentLikeAction(holder, position);
             });
 //            // 判断当前登录账号是否点过赞
 //            if (LoginUserInfoUtil.getLoginUser() != null) {
@@ -592,60 +591,59 @@ public class UserSportMomentDetailActivity extends BaseActivity {
         }
 
 
-//        /**
-//         * 点赞
-//         *
-//         * @param holder   holder
-//         * @param position position
-//         */
-//        private void sportMomentLikeAction(cn.edu.hestyle.bookstadiumonline.adapter.UserSportMomentRecycleAdapter.UserSportMomentItemViewHolder holder, int position) {
-//            UserSportMoment userSportMoment = userSportMomentList.get(position);
-//            Integer sportMomentId = userSportMoment.getSportMomentId();
-//            if (sportMomentId != null) {
-//                FormBody formBody = new FormBody.Builder()
-//                        .add("sportMomentId", "" + sportMomentId)
-//                        .build();
-//                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/like.do", null, formBody, new Callback() {
-//                    @Override
-//                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                        activityContext.runOnUiThread(() -> {
-//                            Toast.makeText(activityContext, "网络访问失败！", Toast.LENGTH_SHORT).show();
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                        String responseString = response.body().string();
-//                        // 转json
-//                        Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
-//                        Type type = new TypeToken<ResponseResult<Void>>() {
-//                        }.getType();
-//                        final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
-//                        if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
-//                            activityContext.runOnUiThread(() -> {
-//                                Toast.makeText(activityContext, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
-//                            });
-//                            return;
-//                        } else {
-//                            // 点赞成功，修改已点赞的图标
-//                            activityContext.runOnUiThread(() -> {
-//                                userSportMoment.setLikeCount(userSportMoment.getLikeCount() + 1);
-//                                Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_liked);
-//                                holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-//                                // 更新点赞数量
-//                                holder.setLikeCount(userSportMoment.getLikeCount());
-//                                // 点赞取消后，修改点击事件为取消点赞
+        /**
+         * 点赞
+         *
+         * @param holder   holder
+         * @param position position
+         */
+        private void sportMomentCommentLikeAction(UserSportMomentCommentRecycleAdapter.UserSportMomentCommentViewHolder holder, int position) {
+            UserSportMomentComment userSportMomentComment = userSportMomentCommentList.get(position);
+            Integer sportMomentCommentId = userSportMomentComment.getId();
+            if (sportMomentCommentId != null) {
+                FormBody formBody = new FormBody.Builder()
+                        .add("sportMomentCommentId", "" + sportMomentCommentId)
+                        .build();
+                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMomentComment/like.do", null, formBody, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        activityContext.runOnUiThread(() -> {
+                            Toast.makeText(activityContext, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseString = response.body().string();
+                        // 转json
+                        Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                        Type type = new TypeToken<ResponseResult<Void>>() {
+                        }.getType();
+                        final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                        if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                            activityContext.runOnUiThread(() -> {
+                                Toast.makeText(activityContext, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                        } else {
+                            // 点赞成功，修改已点赞的图标
+                            activityContext.runOnUiThread(() -> {
+                                userSportMomentComment.setLikeCount(userSportMomentComment.getLikeCount() + 1);
+                                Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_liked);
+                                holder.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                                // 更新点赞数量
+                                holder.setLikeCount(userSportMomentComment.getLikeCount());
+//                                // 点赞成功后，修改点击事件为取消点赞
 //                                holder.likeTextView.setOnClickListener(v -> {
-//                                    sportMomentDislikeAction(holder, position);
+//                                    //sportMomentDislikeAction(holder, position);
 //                                });
-//                            });
-//                        }
-//                    }
-//                });
-//            } else {
-//                Toast.makeText(activityContext, "程序发生未知错误！", Toast.LENGTH_SHORT).show();
-//            }
-//        }
+                            });
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(activityContext, "程序发生未知错误！", Toast.LENGTH_SHORT).show();
+            }
+        }
 //
 //        /**
 //         * 取消点赞
