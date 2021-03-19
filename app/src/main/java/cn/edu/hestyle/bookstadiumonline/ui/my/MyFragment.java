@@ -67,6 +67,19 @@ public class MyFragment extends Fragment {
         });
         this.noLoginConstraintLayout = this.rootView.findViewById(R.id.noLoginConstraintLayout);
         this.loginConstraintLayout = this.rootView.findViewById(R.id.loginConstraintLayout);
+        this.loginConstraintLayout.setOnClickListener(v -> {
+            User loginUser = LoginUserInfoUtil.getLoginUser();
+            if (loginUser != null) {
+                // 跳转到账号详情页面
+                Intent intent = new Intent(MyFragment.this.getContext(), MyAccountDetailActivity.class);
+                startActivity(intent);
+            } else {
+                // 跳转到登录页面
+                Toast.makeText(MyFragment.this.getContext(), "请先进行登录！", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MyFragment.this.getContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
         this.avatarImageView = this.rootView.findViewById(R.id.avatarImageView);
         this.usernameTextView = this.rootView.findViewById(R.id.usernameTextView);
         this.scoreTextView = this.rootView.findViewById(R.id.scoreTextView);
