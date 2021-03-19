@@ -2,6 +2,7 @@ package cn.edu.hestyle.bookstadiumonline.ui.moment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -186,7 +187,10 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             commentTitleTextView.setText(String.format("评论 %d", userSportMoment.getCommentCount()));
             // 点赞数量
             likeTitleTextView.setText(String.format("点赞 %d", userSportMoment.getLikeCount()));
-
+            // 动态点赞、取消点赞
+            likeTextView.setOnClickListener(v -> {
+                UserSportMomentDetailActivity.this.sportMomentLikeAction();
+            });
         }
     }
 
@@ -198,6 +202,54 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             this.nextPageIndex = 1;
             this.userSportMomentCommentList = null;
             getNextPageUserSportMomentCommentFromServer();
+        }
+    }
+
+    /**
+     * sportMoment点赞
+     */
+    private void sportMomentLikeAction() {
+        if (userSportMoment != null && userSportMoment.getSportMomentId() != null) {
+            FormBody formBody = new FormBody.Builder()
+                    .add("sportMomentId", "" + userSportMoment.getSportMomentId())
+                    .build();
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/like.do", null, formBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                        Toast.makeText(UserSportMomentDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type = new TypeToken<ResponseResult<Void>>() {
+                    }.getType();
+                    final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                    if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                            Toast.makeText(UserSportMomentDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    } else {
+                        // 点赞成功，修改已点赞的图标
+                        UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                            UserSportMomentDetailActivity.this.userSportMoment.setLikeCount(UserSportMomentDetailActivity.this.userSportMoment.getLikeCount() + 1);
+                            Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_liked);
+                            UserSportMomentDetailActivity.this.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            UserSportMomentDetailActivity.this.likeTextView.setText(" 取消点赞");
+//                            // 点赞取消后，修改点击事件为取消点赞
+//                            holder.likeTextView.setOnClickListener(v -> {
+//                                sportMomentDislikeAction(holder, position);
+//                            });
+                        });
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(this, "程序发生未知错误！", Toast.LENGTH_SHORT).show();
         }
     }
 
