@@ -3,7 +3,12 @@ package cn.edu.hestyle.bookstadiumonline.ui.my;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +31,15 @@ import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.LoginActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.User;
+import cn.edu.hestyle.bookstadiumonline.entity.UserSportMomentComment;
+import cn.edu.hestyle.bookstadiumonline.ui.moment.UserSportMomentDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.Response;
 
 public class MyAccountDetailActivity extends BaseActivity {
@@ -72,7 +80,8 @@ public class MyAccountDetailActivity extends BaseActivity {
             }
         });
         passwordConstraintLayout.setOnClickListener(v -> {
-            Toast.makeText(MyAccountDetailActivity.this, "点击了修改密码！", Toast.LENGTH_SHORT).show();
+            // 修改密码弹窗
+            MyAccountDetailActivity.this.showModifyPasswordPopueWindow();
         });
         userAvatarConstraintLayout.setOnClickListener(v -> {
             Toast.makeText(MyAccountDetailActivity.this, "点击了修改头像！", Toast.LENGTH_SHORT).show();
@@ -185,6 +194,85 @@ public class MyAccountDetailActivity extends BaseActivity {
                 }
             });
         }
+    }
+
+    /**
+     * 修改密码
+     */
+    private void showModifyPasswordPopueWindow() {
+        View popView = View.inflate(this, R.layout.popue_window_user_modify_password,null);
+        EditText passwordEditText = popView.findViewById(R.id.passwordEditText);
+        EditText newPasswordEditText = popView.findViewById(R.id.newPasswordEditText);
+        EditText reNewPasswordEditText = popView.findViewById(R.id.reNewPasswordEditText);
+        TextView cancelActionTextView = popView.findViewById(R.id.cancelActionTextView);
+        TextView saveActionTextView = popView.findViewById(R.id.saveActionTextView);
+        // 获取屏幕宽高
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+
+        final PopupWindow popupWindow = new PopupWindow(popView, width, height);
+        popupWindow.setAnimationStyle(R.style.MaterialAlertDialog_MaterialComponents_Title_Panel);
+        popupWindow.setFocusable(true);
+        // 点击外部popueWindow消失
+        popupWindow.setOutsideTouchable(true);
+        // 取消（关闭窗口）
+        cancelActionTextView.setOnClickListener(v -> popupWindow.dismiss());
+        // 保存修改
+        saveActionTextView.setOnClickListener(v -> {
+            String password = passwordEditText.getText().toString();
+            if (password.length() == 0) {
+                Toast.makeText(MyAccountDetailActivity.this, "请输入原密码！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String newPassword = newPasswordEditText.getText().toString();
+            if (newPassword.length() == 0) {
+                Toast.makeText(MyAccountDetailActivity.this, "请输入新密码！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!newPassword.equals(reNewPasswordEditText.getText().toString())) {
+                Toast.makeText(MyAccountDetailActivity.this, "两次输入的密码不一致！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            FormBody formBody = new FormBody.Builder()
+                    .add("password", password)
+                    .add("newPassword", newPassword)
+                    .build();
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/user/modifyPassword.do", null, formBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    MyAccountDetailActivity.this.runOnUiThread(()->{
+                        Toast.makeText(MyAccountDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
+                    final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                    MyAccountDetailActivity.this.runOnUiThread(()->{
+                        Toast.makeText(MyAccountDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                        if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                            // 保存成功，则隐藏弹窗
+                            popupWindow.dismiss();
+                        }
+                    });
+                }
+            });
+        });
+        // popupWindow消失屏幕变为不透明
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.alpha = 1.0f;
+            getWindow().setAttributes(lp);
+        });
+        // popupWindow出现屏幕变为半透明
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 0.5f;
+        getWindow().setAttributes(lp);
+        popupWindow.showAtLocation(popView, Gravity.CENTER,0,0);
     }
 
     /**
