@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -132,6 +135,12 @@ public class UserSportMomentDetailActivity extends BaseActivity {
         userSportMomentCommentRecyclerView.setAdapter(userSportMomentCommentRecycleAdapter);
         // 添加分割线
         userSportMomentCommentRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        // 评论
+        writeCommentTextView.setOnClickListener(v -> {
+            // 弹出评论窗口
+            UserSportMomentDetailActivity.this.showCommentPopueWindow(SportMomentCommentTypeEnum.SPORT_MOMENT_COMMENT, null);
+        });
 
         init();
         navigationBarInit("运动动态详情");
@@ -465,6 +474,93 @@ public class UserSportMomentDetailActivity extends BaseActivity {
     }
 
     /**
+     * 评论/回复 弹窗
+     * @param sportMomentCommentTypeEnum    评论 or 回复
+     * @param parentSportMomentCommentId    回复类型时，回复的原评论id
+     */
+    private void showCommentPopueWindow(SportMomentCommentTypeEnum sportMomentCommentTypeEnum, Integer parentSportMomentCommentId) {
+        View popView = View.inflate(this, R.layout.popue_window_sport_moment_comment,null);
+        TextView commentContentTextText = popView.findViewById(R.id.commentContentTextText);
+        TextView cancelActionTextView = popView.findViewById(R.id.cancelActionTextView);
+        TextView commentActionTextView = popView.findViewById(R.id.commentActionTextView);
+        // 获取屏幕宽高
+        int weight = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels / 3;
+
+        final PopupWindow popupWindow = new PopupWindow(popView, weight, height);
+        popupWindow.setAnimationStyle(R.style.MaterialAlertDialog_MaterialComponents_Title_Panel);
+        popupWindow.setFocusable(true);
+        if (sportMomentCommentTypeEnum == SportMomentCommentTypeEnum.SPORT_MOMENT_COMMENT) {
+            commentContentTextText.setHint("请输入评论文字内容~");
+            commentActionTextView.setText("提交评论");
+        } else if (sportMomentCommentTypeEnum == SportMomentCommentTypeEnum.SPORT_MOMENT_REPLY) {
+            commentContentTextText.setHint("请输入回复文字内容~");
+            commentActionTextView.setText("提交回复");
+        }
+        // 点击外部popueWindow消失
+        popupWindow.setOutsideTouchable(true);
+        // 取消（关闭窗口）
+        cancelActionTextView.setOnClickListener(v -> popupWindow.dismiss());
+        // 保存评论
+        commentActionTextView.setOnClickListener(v -> {
+            String commentContext = commentContentTextText.getText().toString();
+            if (commentContext.length() == 0) {
+                Toast.makeText(UserSportMomentDetailActivity.this, "请输入文字内容！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            UserSportMomentComment userSportMomentComment = new UserSportMomentComment();
+            userSportMomentComment.setSportMomentId(userSportMoment.getSportMomentId());
+            userSportMomentComment.setContent(commentContext);
+            userSportMomentComment.setParentId(parentSportMomentCommentId);
+            // 转json
+            Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+            String userSportMomentCommentData = gson.toJson(userSportMomentComment);
+            FormBody formBody = new FormBody.Builder()
+                    .add("userSportMomentCommentData", userSportMomentCommentData)
+                    .build();
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMomentComment/add.do", null, formBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    UserSportMomentDetailActivity.this.runOnUiThread(()->{
+                        Toast.makeText(UserSportMomentDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
+                    final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                    UserSportMomentDetailActivity.this.runOnUiThread(()->{
+                        Toast.makeText(UserSportMomentDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                        if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                            // 保存成功，则隐藏弹窗
+                            popupWindow.dismiss();
+                        }
+                    });
+                }
+            });
+        });
+        // popupWindow消失屏幕变为不透明
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.alpha = 1.0f;
+            getWindow().setAttributes(lp);
+        });
+        // popupWindow出现屏幕变为半透明
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 0.5f;
+        getWindow().setAttributes(lp);
+        popupWindow.showAtLocation(popView, Gravity.BOTTOM,0,0);
+    }
+
+    private void checkCommentFormBody(Integer parentSportMomentCommentId) {
+
+    }
+
+    /**
      * 设置navigationBar
      */
     private void navigationBarInit(String title) {
@@ -474,6 +570,16 @@ public class UserSportMomentDetailActivity extends BaseActivity {
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(v -> finish());
+    }
+
+    /**
+     * SportMomentComment类型
+     */
+    enum SportMomentCommentTypeEnum {
+        /** 评论SportMoment */
+        SPORT_MOMENT_COMMENT,
+        /** 回复SportMomentComment */
+        SPORT_MOMENT_REPLY;
     }
 
     class UserSportMomentCommentRecycleAdapter extends RecyclerView.Adapter<UserSportMomentCommentRecycleAdapter.UserSportMomentCommentViewHolder> {
@@ -593,7 +699,8 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             // 回复
             holder.commentTextView.setText("回复");
             holder.commentTextView.setOnClickListener(v -> {
-                Toast.makeText(activityContext, "点击了回复 sportMomentCommentId = " + userSportMomentComment.getId(), Toast.LENGTH_SHORT).show();
+                // 弹出评论窗口
+                UserSportMomentDetailActivity.this.showCommentPopueWindow(SportMomentCommentTypeEnum.SPORT_MOMENT_REPLY, userSportMomentComment.getId());
             });
         }
 
