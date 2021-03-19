@@ -224,7 +224,7 @@ public class UserSportMomentDetailActivity extends BaseActivity {
                                     UserSportMomentDetailActivity.this.likeTextView.setText(" 取消点赞");
                                     // 修改点击事件(修改为取消点赞)
                                     UserSportMomentDetailActivity.this.likeTextView.setOnClickListener(v -> {
-                                        // sportMomentDislikeAction(holder, position);
+                                        UserSportMomentDetailActivity.this.sportMomentDislikeAction();
                                     });
                                 });
                             }
@@ -287,16 +287,64 @@ public class UserSportMomentDetailActivity extends BaseActivity {
                             Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_liked);
                             UserSportMomentDetailActivity.this.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                             UserSportMomentDetailActivity.this.likeTextView.setText(" 取消点赞");
-//                            // 点赞取消后，修改点击事件为取消点赞
-//                            holder.likeTextView.setOnClickListener(v -> {
-//                                sportMomentDislikeAction(holder, position);
-//                            });
+                            // 点赞成功后，修改点击事件为取消点赞
+                            UserSportMomentDetailActivity.this.likeTextView.setOnClickListener(v -> {
+                                UserSportMomentDetailActivity.this.sportMomentDislikeAction();
+                            });
                         });
                     }
                 }
             });
         } else {
             Toast.makeText(this, "程序发生未知错误！", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * sportMoment取消点赞
+     */
+    private void sportMomentDislikeAction() {
+        if (userSportMoment != null && userSportMoment.getSportMomentId() != null) {
+            FormBody formBody = new FormBody.Builder()
+                    .add("sportMomentId", "" + userSportMoment.getSportMomentId())
+                    .build();
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/dislike.do", null, formBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                        Toast.makeText(UserSportMomentDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type = new TypeToken<ResponseResult<Void>>() {
+                    }.getType();
+                    final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                    if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                            Toast.makeText(UserSportMomentDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    } else {
+                        // 点赞取消成功，修改为未点赞的图标
+                        UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                            UserSportMomentDetailActivity.this.userSportMoment.setLikeCount(UserSportMomentDetailActivity.this.userSportMoment.getLikeCount() - 1);
+                            Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_like);
+                            UserSportMomentDetailActivity.this.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            UserSportMomentDetailActivity.this.likeTextView.setText(" 点赞");
+                            // 点赞取消后，修改点击事件为点赞
+                            UserSportMomentDetailActivity.this.likeTextView.setOnClickListener(v -> {
+                                UserSportMomentDetailActivity.this.sportMomentLikeAction();
+                            });
+                        });
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(UserSportMomentDetailActivity.this, "程序发生未知错误！", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -413,7 +461,6 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             }
         });
     }
-
 
     /**
      * 设置navigationBar
