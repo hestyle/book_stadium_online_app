@@ -31,8 +31,6 @@ import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.LoginActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.User;
-import cn.edu.hestyle.bookstadiumonline.entity.UserSportMomentComment;
-import cn.edu.hestyle.bookstadiumonline.ui.moment.UserSportMomentDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -43,6 +41,12 @@ import okhttp3.FormBody;
 import okhttp3.Response;
 
 public class MyAccountDetailActivity extends BaseActivity {
+    /** 性别：男 */
+    private static final String USER_GENDER_MAN = "男";
+    /** 性别：女 */
+    private static final String USER_GENDER_WOMAN = "女";
+    /** 性别：保密 */
+    private static final String USER_GENDER_SECRECY = "保密";
     private User loginUser;
     private SmartRefreshLayout myAccountDetailSmartRefreshLayout;
     private TextView usernameTextView;
@@ -87,7 +91,8 @@ public class MyAccountDetailActivity extends BaseActivity {
             Toast.makeText(MyAccountDetailActivity.this, "点击了修改头像！", Toast.LENGTH_SHORT).show();
         });
         genderConstraintLayout.setOnClickListener(v -> {
-            Toast.makeText(MyAccountDetailActivity.this, "点击了修改性别！", Toast.LENGTH_SHORT).show();
+            // 修改性别弹窗
+            MyAccountDetailActivity.this.showModifyGenderPopueWindow();
         });
         addressConstraintLayout.setOnClickListener(v -> {
             Toast.makeText(MyAccountDetailActivity.this, "点击了修改地址！", Toast.LENGTH_SHORT).show();
@@ -273,6 +278,90 @@ public class MyAccountDetailActivity extends BaseActivity {
         lp.alpha = 0.5f;
         getWindow().setAttributes(lp);
         popupWindow.showAtLocation(popView, Gravity.CENTER,0,0);
+    }
+
+    /**
+     * 修改性别
+     */
+    private void showModifyGenderPopueWindow() {
+        View popView = View.inflate(this, R.layout.popue_window_user_modify_gender,null);
+        TextView manTextView = popView.findViewById(R.id.manTextView);
+        TextView womanTextView = popView.findViewById(R.id.womanTextView);
+        TextView secrecyTextView = popView.findViewById(R.id.secrecyTextView);
+        TextView cancelActionTextView = popView.findViewById(R.id.cancelActionTextView);
+        // 获取屏幕宽高
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels / 3;
+
+        final PopupWindow popupWindow = new PopupWindow(popView, width, height);
+        popupWindow.setAnimationStyle(R.style.MaterialAlertDialog_MaterialComponents_Title_Panel);
+        popupWindow.setFocusable(true);
+        // 点击外部popueWindow消失
+        popupWindow.setOutsideTouchable(true);
+        // 取消（关闭窗口）
+        cancelActionTextView.setOnClickListener(v -> popupWindow.dismiss());
+        // 男
+        manTextView.setOnClickListener(v -> {
+            MyAccountDetailActivity.this.modifyGender(USER_GENDER_MAN, popupWindow);
+        });
+        // 女
+        womanTextView.setOnClickListener(v -> {
+            MyAccountDetailActivity.this.modifyGender(USER_GENDER_WOMAN, popupWindow);
+        });
+        // 保密
+        secrecyTextView.setOnClickListener(v -> {
+            MyAccountDetailActivity.this.modifyGender(USER_GENDER_SECRECY, popupWindow);
+        });
+        // popupWindow消失屏幕变为不透明
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.alpha = 1.0f;
+            getWindow().setAttributes(lp);
+        });
+        // popupWindow出现屏幕变为半透明
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 0.5f;
+        getWindow().setAttributes(lp);
+        popupWindow.showAtLocation(popView, Gravity.BOTTOM,0,20);
+    }
+
+    /**
+     * 修改性别
+     * @param gender            性别
+     * @param popupWindow       修改性别的弹窗
+     */
+    private void modifyGender(String gender, PopupWindow popupWindow) {
+        FormBody formBody = new FormBody.Builder()
+                .add("gender", gender)
+                .build();
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/user/modifyGender.do", null, formBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                MyAccountDetailActivity.this.runOnUiThread(()->{
+                    Toast.makeText(MyAccountDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseString = response.body().string();
+                // 转json
+                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
+                final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                MyAccountDetailActivity.this.runOnUiThread(()->{
+                    Toast.makeText(MyAccountDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        // 修改成功，则隐藏弹窗
+                        popupWindow.dismiss();
+                        // 更新本地缓存
+                        MyAccountDetailActivity.this.loginUser.setGender(gender);
+                        MyAccountDetailActivity.this.genderTextView.setText(gender);
+                        LoginUserInfoUtil.update(MyAccountDetailActivity.this.loginUser);
+                    }
+                });
+            }
+        });
     }
 
     /**
