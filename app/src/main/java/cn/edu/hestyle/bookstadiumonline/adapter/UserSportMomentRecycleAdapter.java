@@ -164,8 +164,8 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
                                     sportMomentDislikeAction(holder, position);
                                 });
                             });
+                            return;
                         }
-                        return;
                     }
                     activityContext.runOnUiThread(()->{
                         Drawable drawable = activityContext.getResources().getDrawable(R.drawable.ic_like);

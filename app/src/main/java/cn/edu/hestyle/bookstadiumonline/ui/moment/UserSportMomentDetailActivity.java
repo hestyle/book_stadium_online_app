@@ -227,8 +227,8 @@ public class UserSportMomentDetailActivity extends BaseActivity {
                                         UserSportMomentDetailActivity.this.sportMomentDislikeAction();
                                     });
                                 });
+                                return;
                             }
-                            return;
                         }
                         UserSportMomentDetailActivity.this.runOnUiThread(() -> {
                             Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_like);
@@ -287,6 +287,7 @@ public class UserSportMomentDetailActivity extends BaseActivity {
                             Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_liked);
                             UserSportMomentDetailActivity.this.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                             UserSportMomentDetailActivity.this.likeTextView.setText(" 取消点赞");
+                            UserSportMomentDetailActivity.this.likeTitleTextView.setText(String.format("点赞 %d", UserSportMomentDetailActivity.this.userSportMoment.getLikeCount()));
                             // 点赞成功后，修改点击事件为取消点赞
                             UserSportMomentDetailActivity.this.likeTextView.setOnClickListener(v -> {
                                 UserSportMomentDetailActivity.this.sportMomentDislikeAction();
@@ -335,6 +336,7 @@ public class UserSportMomentDetailActivity extends BaseActivity {
                             Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_like);
                             UserSportMomentDetailActivity.this.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                             UserSportMomentDetailActivity.this.likeTextView.setText(" 点赞");
+                            UserSportMomentDetailActivity.this.likeTitleTextView.setText(String.format("点赞 %d", UserSportMomentDetailActivity.this.userSportMoment.getLikeCount()));
                             // 点赞取消后，修改点击事件为点赞
                             UserSportMomentDetailActivity.this.likeTextView.setOnClickListener(v -> {
                                 UserSportMomentDetailActivity.this.sportMomentLikeAction();
