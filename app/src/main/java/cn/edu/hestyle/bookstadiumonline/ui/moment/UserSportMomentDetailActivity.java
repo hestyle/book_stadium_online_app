@@ -104,6 +104,9 @@ public class UserSportMomentDetailActivity extends BaseActivity {
         userSportMomentSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
+                // 更新UserSportMoment
+                UserSportMomentDetailActivity.this.getUserSportMomentFromServer();
+                // 更新UserSportMomentComment
                 UserSportMomentDetailActivity.this.nextPageIndex = 1;
                 UserSportMomentDetailActivity.this.getNextPageUserSportMomentCommentFromServer();
             }
@@ -195,6 +198,48 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             this.nextPageIndex = 1;
             this.userSportMomentCommentList = null;
             getNextPageUserSportMomentCommentFromServer();
+        }
+    }
+
+    /**
+     * 获取UserSportMoment
+     */
+    private void getUserSportMomentFromServer() {
+        if (userSportMoment != null && userSportMoment.getSportMomentId() != null) {
+            // 从服务器获取stadiumCategory
+            FormBody formBody = new FormBody.Builder()
+                    .add("sportMomentId", "" + userSportMoment.getSportMomentId())
+                    .build();
+            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/findBySportMomentId.do", null, formBody, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    UserSportMomentDetailActivity.this.runOnUiThread(()->{
+                        Toast.makeText(UserSportMomentDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    String responseString = response.body().string();
+                    // 转json
+                    Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                    Type type =  new TypeToken<ResponseResult<UserSportMoment>>(){}.getType();
+                    final ResponseResult<UserSportMoment> responseResult = gson.fromJson(responseString, type);
+                    if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        UserSportMomentDetailActivity.this.runOnUiThread(()->{
+                            Toast.makeText(UserSportMomentDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                        return;
+                    }
+                    UserSportMoment userSportMoment = responseResult.getData();
+                    Log.i("UserSportMoment", userSportMoment + "");
+                    // 更新ui
+                    UserSportMomentDetailActivity.this.runOnUiThread(()->{
+                        UserSportMomentDetailActivity.this.userSportMoment = userSportMoment;
+                        UserSportMomentDetailActivity.this.init();
+                    });
+                }
+            });
         }
     }
 
