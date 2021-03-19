@@ -35,6 +35,7 @@ import java.util.List;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.adapter.UserSportMomentRecycleAdapter;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
+import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumSearchActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -82,7 +83,7 @@ public class MomentFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         userSportMomentRecyclerView.setLayoutManager(linearLayoutManager);
-        userSportMomentRecycleAdapter = new UserSportMomentRecycleAdapter(this.getContext(), userSportMomentList);
+        userSportMomentRecycleAdapter = new UserSportMomentRecycleAdapter(this.getActivity(), userSportMomentList);
         userSportMomentRecyclerView.setAdapter(userSportMomentRecycleAdapter);
 
         return rootView;
@@ -200,7 +201,27 @@ public class MomentFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        // 设置right search
+        ImageButton rightSearchImageButton = new ImageButton(MomentFragment.this.getContext());
+        rightSearchImageButton.setBackgroundColor(Color.TRANSPARENT);
+        rightSearchImageButton.setImageResource(R.drawable.ic_search_white);
+        ConstraintLayout.LayoutParams rightSearchLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
+        rightSearchLayoutParams.rightMargin = 15;
+        rightSearchLayoutParams.endToEnd = R.id.user_sport_moment_list_navigation_bar;
+        rightSearchLayoutParams.topToTop = R.id.user_sport_moment_list_navigation_bar;
+        rightSearchLayoutParams.bottomToBottom = R.id.user_sport_moment_list_navigation_bar;
+        rightSearchImageButton.setLayoutParams(rightSearchLayoutParams);
+        rightSearchImageButton.setOnClickListener(v -> {
+            // 判断是否登录
+            if (LoginUserInfoUtil.getLoginUser() == null) {
+                Toast.makeText(getContext(), "请先进行登录！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(MomentFragment.this.getContext(), UserSportMomentSearchActivity.class);
+            startActivity(intent);
+        });
         commonTitleConstraintLayout.addView(leftAddImageButton);
+        commonTitleConstraintLayout.addView(rightSearchImageButton);
     }
 
 }
