@@ -38,6 +38,7 @@ import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMomentComment;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
@@ -191,6 +192,52 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             likeTextView.setOnClickListener(v -> {
                 UserSportMomentDetailActivity.this.sportMomentLikeAction();
             });
+            // 判断当前登录账号是否点赞了该运动动态
+            if (LoginUserInfoUtil.getLoginUser() != null) {
+                FormBody formBody = new FormBody.Builder()
+                        .add("sportMomentId", "" + userSportMoment.getSportMomentId())
+                        .build();
+                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/hasLiked.do", null, formBody, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                            Toast.makeText(UserSportMomentDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseString = response.body().string();
+                        // 转json
+                        Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                        Type type = new TypeToken<ResponseResult<Boolean>>() {
+                        }.getType();
+                        final ResponseResult<Boolean> responseResult = gson.fromJson(responseString, type);
+                        Log.w("ResponseResult", "" + responseResult);
+                        if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                            Boolean flag = responseResult.getData();
+                            if (flag) {
+                                // 当前登录账号已点赞
+                                UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                                    Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_liked);
+                                    UserSportMomentDetailActivity.this.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                                    UserSportMomentDetailActivity.this.likeTextView.setText(" 取消点赞");
+                                    // 修改点击事件(修改为取消点赞)
+                                    UserSportMomentDetailActivity.this.likeTextView.setOnClickListener(v -> {
+                                        // sportMomentDislikeAction(holder, position);
+                                    });
+                                });
+                            }
+                            return;
+                        }
+                        UserSportMomentDetailActivity.this.runOnUiThread(() -> {
+                            Drawable drawable = UserSportMomentDetailActivity.this.getResources().getDrawable(R.drawable.ic_like);
+                            UserSportMomentDetailActivity.this.likeTextView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                            UserSportMomentDetailActivity.this.likeTextView.setText(" 点赞");
+                        });
+                    }
+                });
+            }
         }
     }
 
