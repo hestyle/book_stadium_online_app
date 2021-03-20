@@ -15,7 +15,8 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Book_stadium_online_app">
-        <activity android:name=".ui.my.MyAccountDetailActivity"></activity>
+        <activity android:name=".ui.my.MySportMomentActivity"></activity>
+        <activity android:name=".ui.my.MyAccountDetailActivity" />
         <activity android:name=".ui.moment.UserSportMomentDetailActivity" />
         <activity android:name=".ui.moment.UserSportMomentSearchActivity" />
         <activity android:name=".ui.moment.UserSportMomentAddActivity" />

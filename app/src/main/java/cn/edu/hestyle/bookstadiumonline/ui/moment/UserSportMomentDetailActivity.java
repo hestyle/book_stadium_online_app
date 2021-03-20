@@ -556,10 +556,6 @@ public class UserSportMomentDetailActivity extends BaseActivity {
         popupWindow.showAtLocation(popView, Gravity.BOTTOM,0,0);
     }
 
-    private void checkCommentFormBody(Integer parentSportMomentCommentId) {
-
-    }
-
     /**
      * 设置navigationBar
      */

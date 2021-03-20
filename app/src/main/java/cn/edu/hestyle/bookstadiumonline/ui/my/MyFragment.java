@@ -106,6 +106,19 @@ public class MyFragment extends Fragment {
             }
         });
 
+        // 查看我的动态action
+        ConstraintLayout myMomentConstraintLayout = this.rootView.findViewById(R.id.myMomentConstraintLayout);
+        myMomentConstraintLayout.setOnClickListener(v -> {
+            User loginUser = LoginUserInfoUtil.getLoginUser();
+            // 判断是否登录
+            if (loginUser == null || loginUser.getId() == null) {
+                Toast.makeText(MyFragment.this.getContext(), "请先进行登录！", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(MyFragment.this.getContext(), MySportMomentActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return this.rootView;
     }
 
