@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +38,6 @@ import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.ui.moment.UserSportMomentDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
-import cn.edu.hestyle.bookstadiumonline.ui.my.setting.SettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
@@ -334,9 +332,12 @@ public class MySportMomentActivity extends BaseActivity {
                     Toast.makeText(activityContext, "请先进行登录！", Toast.LENGTH_SHORT).show();
                 }
             });
-            // 修改action
-            holder.modifyTextView.setOnClickListener(v -> {
-                Toast.makeText(activityContext, "点击了编辑 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            // 编辑action
+            holder.editTextView.setOnClickListener(v -> {
+                // 跳转到编辑页面
+                Intent intent = new Intent(activityContext, MySportMomentEditActivity.class);
+                intent.putExtra("UserSportMoment", userSportMoment);
+                activityContext.startActivity(intent);
             });
             // 删除action
             holder.deleteTextView.setOnClickListener(v -> {
@@ -501,7 +502,7 @@ public class MySportMomentActivity extends BaseActivity {
         // 内部类，绑定控件
         class MySportMomentViewHolder extends RecyclerView.ViewHolder {
             public ConstraintLayout rightActionConstraintLayout;
-            public TextView modifyTextView;
+            public TextView editTextView;
             public TextView deleteTextView;
             public ConstraintLayout userSportMomentInfoConstraintLayout;
             public TextView contentTextView;
@@ -517,7 +518,7 @@ public class MySportMomentActivity extends BaseActivity {
             public MySportMomentViewHolder(View itemView) {
                 super(itemView);
                 rightActionConstraintLayout = itemView.findViewById(R.id.rightActionConstraintLayout);
-                modifyTextView = itemView.findViewById(R.id.modifyTextView);
+                editTextView = itemView.findViewById(R.id.editTextView);
                 deleteTextView = itemView.findViewById(R.id.deleteTextView);
                 userSportMomentInfoConstraintLayout = itemView.findViewById(R.id.userSportMomentInfoConstraintLayout);
                 contentTextView = itemView.findViewById(R.id.contentTextView);

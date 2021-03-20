@@ -44,23 +44,21 @@ import okhttp3.FormBody;
 import okhttp3.Response;
 
 public class UserSportMomentAddActivity extends BaseActivity {
-    private static final Integer RESULT_CAMERA_IMAGE = 1;
-    private static final Integer RESULT_LOAD_IMAGE = 2;
+    protected static final Integer RESULT_CAMERA_IMAGE = 1;
+    protected static final Integer RESULT_LOAD_IMAGE = 2;
     /** 评论的最大长度 */
-    private static final Integer SPORT_MOMENT_CONTENT_MAX_LENGTH = 200;
-    private EditText contentEditText;
+    protected static final Integer SPORT_MOMENT_CONTENT_MAX_LENGTH = 200;
+    protected EditText contentEditText;
     private ImageView oneImageView;
     private ImageView oneImageDeleteImageView;
     private ImageView twoImageView;
     private ImageView twoImageDeleteImageView;
     private ImageView threeImageView;
     private ImageView threeImageDeleteImageView;
-    private Button saveButton;
+    protected Button saveButton;
 
-
-    private Integer uploadingIndex = 0;
-    private String uploadingFilePath;
-    private List<String> userSportMomentImagePathList;
+    protected String uploadingFilePath;
+    protected List<String> userSportMomentImagePathList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +66,6 @@ public class UserSportMomentAddActivity extends BaseActivity {
         setContentView(R.layout.activity_user_sport_moment_add);
         this.navigationBarInit("发表运动动态");
 
-        this.uploadingIndex = 0;
         this.uploadingFilePath = null;
         this.userSportMomentImagePathList = new ArrayList<>();
 
@@ -90,7 +87,6 @@ public class UserSportMomentAddActivity extends BaseActivity {
 
         // 上传第一张图片
         oneImageView.setOnClickListener(v -> {
-            UserSportMomentAddActivity.this.uploadingIndex = 0;
             UserSportMomentAddActivity.this.showUploadImagePopueWindow();
         });
         // 删除第一张图片
@@ -99,7 +95,6 @@ public class UserSportMomentAddActivity extends BaseActivity {
         });
         // 上传第二张图片
         twoImageView.setOnClickListener(v -> {
-            UserSportMomentAddActivity.this.uploadingIndex = 1;
             UserSportMomentAddActivity.this.showUploadImagePopueWindow();
         });
         // 删除第二张图片
@@ -108,7 +103,6 @@ public class UserSportMomentAddActivity extends BaseActivity {
         });
         // 上传第三张图片
         threeImageView.setOnClickListener(v -> {
-            UserSportMomentAddActivity.this.uploadingIndex = 2;
             UserSportMomentAddActivity.this.showUploadImagePopueWindow();
         });
         // 删除第三张图片
@@ -179,7 +173,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
      * 删除照片
      * @param index     userSportMomentImagePathList下标
      */
-    private void removeImage(int index) {
+    protected void removeImage(int index) {
         if (userSportMomentImagePathList.size() > index) {
             userSportMomentImagePathList.remove(index);
         }
@@ -235,7 +229,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
      * 成功上传完一张图片
      * @param imagePath     imagePath
      */
-    private void uploadImage(String imagePath) {
+    protected void uploadImage(String imagePath) {
         if (userSportMomentImagePathList.size() == 2) {
             // 将上传的图片显示至threeImageView
             Glide.with(UserSportMomentAddActivity.this)
@@ -270,7 +264,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
      * 将图片上传至服务器
      * @param imageFile     待上传图片文件
      */
-    private void uploadImageToServer(File imageFile) {
+    protected void uploadImageToServer(File imageFile) {
         OkHttpUtil.uploadFile(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/uploadImage.do", imageFile, OkHttpUtil.MEDIA_TYPE_JPG, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -305,7 +299,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
      * 检查表单
      * @return      FormBody
      */
-    private FormBody checkForm() {
+    protected FormBody checkForm() {
         // 检查content
         String content = contentEditText.getText().toString();
         if (content.length() == 0) {
@@ -338,7 +332,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
     /**
      * 选择上传图片弹窗
      */
-    private void showUploadImagePopueWindow() {
+    protected void showUploadImagePopueWindow() {
         View popView = View.inflate(this, R.layout.popue_window_upload_image,null);
         TextView bt_album = popView.findViewById(R.id.btn_pop_album);
         TextView bt_camera = popView.findViewById(R.id.btn_pop_camera);
@@ -379,7 +373,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
      * 调用相机，拍照
      * @param num
      */
-    private void takeCamera(int num) {
+    protected void takeCamera(int num) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
@@ -398,7 +392,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
         }
     }
 
-    private File createImageFile() {
+    protected File createImageFile() {
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         File image = null;
         try {
@@ -422,7 +416,7 @@ public class UserSportMomentAddActivity extends BaseActivity {
     /**
      * 设置navigationBar
      */
-    private void navigationBarInit(String title) {
+    protected void navigationBarInit(String title) {
         // 设置title
         TextView titleTextView = this.findViewById(R.id.titleTextView);
         titleTextView.setText(String.format("%s", title));
