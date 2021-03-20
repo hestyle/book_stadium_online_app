@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +39,7 @@ import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.ui.moment.UserSportMomentDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.ui.my.setting.SettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
@@ -87,7 +90,6 @@ public class MySportMomentActivity extends BaseActivity {
         mySportMomentItemRecyclerView.setLayoutManager(linearLayoutManager);
         mySportMomentRecycleAdapter = new MySportMomentRecycleAdapter(this, userSportMomentList);
         mySportMomentItemRecyclerView.setAdapter(mySportMomentRecycleAdapter);
-
     }
 
     @Override
@@ -193,8 +195,6 @@ public class MySportMomentActivity extends BaseActivity {
         backTitleTextView.setOnClickListener(v -> finish());
     }
 
-
-
     class MySportMomentRecycleAdapter extends RecyclerView.Adapter<MySportMomentRecycleAdapter.MySportMomentViewHolder> {
         private Activity activityContext;
         private View inflater;
@@ -214,7 +214,6 @@ public class MySportMomentActivity extends BaseActivity {
             this.userSportMomentList = userSportMomentList;
             this.notifyDataSetChanged();
         }
-
 
         @Override
         public MySportMomentRecycleAdapter.MySportMomentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -334,6 +333,51 @@ public class MySportMomentActivity extends BaseActivity {
                 } else {
                     Toast.makeText(activityContext, "请先进行登录！", Toast.LENGTH_SHORT).show();
                 }
+            });
+            // 修改action
+            holder.modifyTextView.setOnClickListener(v -> {
+                Toast.makeText(activityContext, "点击了编辑 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            });
+            // 删除action
+            holder.deleteTextView.setOnClickListener(v -> {
+                // 弹窗提示
+                AlertDialog alertDialog = new AlertDialog.Builder(activityContext)
+                        .setTitle("提示信息")
+                        .setMessage("您确定要删除这个动态吗？\n注意：删除后将无法恢复！")
+                        .setNegativeButton("取消", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .setPositiveButton("删除", (dialog, which) -> {
+                            dialog.dismiss();
+                            FormBody formBody = new FormBody.Builder().add("sportMomentId", userSportMoment.getSportMomentId() + "").build();
+                            OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/userSportMoment/deleteMySportMoment.do", null, formBody, new Callback() {
+                                @Override
+                                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                    activityContext.runOnUiThread(() -> {
+                                        Toast.makeText(activityContext, "网络错误，登录注销失败！", Toast.LENGTH_LONG).show();
+                                    });
+                                }
+
+                                @Override
+                                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                    String responseString = response.body().string();
+                                    Gson gson = new Gson();
+                                    Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
+                                    final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
+                                    activityContext.runOnUiThread(() -> {
+                                        Toast.makeText(activityContext, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                                        if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                                            // 删除成功
+                                            dialog.dismiss();
+                                            MySportMomentRecycleAdapter.this.userSportMomentList.remove(position);
+                                            MySportMomentRecycleAdapter.this.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+                            });
+                        })
+                        .create();
+                alertDialog.show();
             });
         }
 
@@ -456,6 +500,9 @@ public class MySportMomentActivity extends BaseActivity {
 
         // 内部类，绑定控件
         class MySportMomentViewHolder extends RecyclerView.ViewHolder {
+            public ConstraintLayout rightActionConstraintLayout;
+            public TextView modifyTextView;
+            public TextView deleteTextView;
             public ConstraintLayout userSportMomentInfoConstraintLayout;
             public TextView contentTextView;
             public ConstraintLayout imageConstraintLayout;
@@ -469,6 +516,9 @@ public class MySportMomentActivity extends BaseActivity {
 
             public MySportMomentViewHolder(View itemView) {
                 super(itemView);
+                rightActionConstraintLayout = itemView.findViewById(R.id.rightActionConstraintLayout);
+                modifyTextView = itemView.findViewById(R.id.modifyTextView);
+                deleteTextView = itemView.findViewById(R.id.deleteTextView);
                 userSportMomentInfoConstraintLayout = itemView.findViewById(R.id.userSportMomentInfoConstraintLayout);
                 contentTextView = itemView.findViewById(R.id.contentTextView);
                 imageConstraintLayout = itemView.findViewById(R.id.imageConstraintLayout);
