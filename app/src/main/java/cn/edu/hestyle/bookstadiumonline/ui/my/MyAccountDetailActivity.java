@@ -1,7 +1,11 @@
 package cn.edu.hestyle.bookstadiumonline.ui.my;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -24,8 +28,11 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.LoginActivity;
@@ -41,6 +48,8 @@ import okhttp3.FormBody;
 import okhttp3.Response;
 
 public class MyAccountDetailActivity extends BaseActivity {
+    private static final Integer RESULT_CAMERA_IMAGE = 1;
+    private static final Integer RESULT_LOAD_IMAGE = 2;
     /** 性别：男 */
     private static final String USER_GENDER_MAN = "男";
     /** 性别：女 */
@@ -59,6 +68,8 @@ public class MyAccountDetailActivity extends BaseActivity {
     private TextView addressTextView;
     private ConstraintLayout phoneNumberConstraintLayout;
     private TextView phoneNumberTextView;
+
+    private String uploadingFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +99,8 @@ public class MyAccountDetailActivity extends BaseActivity {
             MyAccountDetailActivity.this.showModifyPasswordPopueWindow();
         });
         userAvatarConstraintLayout.setOnClickListener(v -> {
-            Toast.makeText(MyAccountDetailActivity.this, "点击了修改头像！", Toast.LENGTH_SHORT).show();
+            // 修改头像弹窗
+            MyAccountDetailActivity.this.showUploadImagePopueWindow();
         });
         genderConstraintLayout.setOnClickListener(v -> {
             // 修改性别弹窗
@@ -116,6 +128,31 @@ public class MyAccountDetailActivity extends BaseActivity {
             Toast.makeText(this, "请先进行登录！", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK ) {
+            if (requestCode == RESULT_LOAD_IMAGE && null != data) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                uploadingFilePath = cursor.getString(columnIndex);
+                cursor.close();
+                Log.i("UserSportMoment", "已选中图片 imagePath = " + uploadingFilePath);
+                // 上传图片
+                File imageFile = new File(uploadingFilePath);
+                uploadImageToServer(imageFile);
+            } else if (requestCode == RESULT_CAMERA_IMAGE){
+                Log.i("UserSportMoment", "已选中(拍照)图片 imagePath = " + uploadingFilePath);
+                // 上传图片
+                File imageFile = new File(uploadingFilePath);
+                uploadImageToServer(imageFile);
+            }
         }
     }
 
@@ -279,6 +316,130 @@ public class MyAccountDetailActivity extends BaseActivity {
         lp.alpha = 0.5f;
         getWindow().setAttributes(lp);
         popupWindow.showAtLocation(popView, Gravity.CENTER,0,0);
+    }
+
+    /**
+     * 选择上传图片弹窗
+     */
+    private void showUploadImagePopueWindow() {
+        View popView = View.inflate(this, R.layout.popue_window_upload_image,null);
+        TextView bt_album = popView.findViewById(R.id.btn_pop_album);
+        TextView bt_camera = popView.findViewById(R.id.btn_pop_camera);
+        TextView bt_cancel = popView.findViewById(R.id.btn_pop_cancel);
+        // 获取屏幕宽高
+        int weight = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels / 3;
+
+        final PopupWindow popupWindow = new PopupWindow(popView, weight, height);
+        popupWindow.setAnimationStyle(R.style.MaterialAlertDialog_MaterialComponents_Title_Panel);
+        popupWindow.setFocusable(true);
+        // 点击外部popueWindow消失
+        popupWindow.setOutsideTouchable(true);
+        bt_camera.setOnClickListener(v -> {
+            takeCamera(RESULT_CAMERA_IMAGE);
+            popupWindow.dismiss();
+        });
+        bt_album.setOnClickListener(v -> {
+            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+            popupWindow.dismiss();
+        });
+        bt_cancel.setOnClickListener(v -> popupWindow.dismiss());
+        // popupWindow消失屏幕变为不透明
+        popupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.alpha = 1.0f;
+            getWindow().setAttributes(lp);
+        });
+        // popupWindow出现屏幕变为半透明
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 0.5f;
+        getWindow().setAttributes(lp);
+        popupWindow.showAtLocation(popView, Gravity.BOTTOM,0,0);
+    }
+
+    /**
+     * 将图片上传至服务器
+     * @param imageFile     待上传图片文件
+     */
+    private void uploadImageToServer(File imageFile) {
+        OkHttpUtil.uploadFile(ServerSettingActivity.getServerBaseUrl() + "/user/uploadAvatar.do", imageFile, OkHttpUtil.MEDIA_TYPE_JPG, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                MyAccountDetailActivity.this.runOnUiThread(()->{
+                    Toast.makeText(MyAccountDetailActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseString = response.body().string();
+                // 转json
+                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                Type type =  new TypeToken<ResponseResult<String>>(){}.getType();
+                final ResponseResult<String> responseResult = gson.fromJson(responseString, type);
+                MyAccountDetailActivity.this.runOnUiThread(()->{
+                    Toast.makeText(MyAccountDetailActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    return;
+                }
+                String imagePath = responseResult.getData();
+                Log.i("User", "文件上传成功！imagePath = " + responseResult.getData() + "");
+                MyAccountDetailActivity.this.runOnUiThread(()->{
+                    // 更新本地缓存
+                    MyAccountDetailActivity.this.loginUser.setAvatarPath(imagePath);
+                    LoginUserInfoUtil.update(MyAccountDetailActivity.this.loginUser);
+                    Glide.with(MyAccountDetailActivity.this)
+                            .load(ServerSettingActivity.getServerHostUrl() + imagePath)
+                            .into(MyAccountDetailActivity.this.userAvatarImageView);
+                });
+            }
+        });
+    }
+
+    /**
+     * 调用相机，拍照
+     * @param num
+     */
+    private void takeCamera(int num) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getApplicationContext().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            photoFile = createImageFile();
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, num);//跳转界面传回拍照所得数据
+            } else {
+                Toast.makeText(getApplicationContext(), "发生未知错误！", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "相机不可用！", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private File createImageFile() {
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File image = null;
+        try {
+            image = File.createTempFile(
+                    generateFileName(),  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        uploadingFilePath = image.getAbsolutePath();
+        return image;
+    }
+
+    public static String generateFileName() {
+        String timeStamp = new SimpleDateFormat(ResponseResult.DATETIME_FORMAT).format(new Date());
+        return "JPEG_" + timeStamp + "_";
     }
 
     /**
