@@ -342,12 +342,6 @@ public class BookFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-
-    }
-
     private static class StadiumCategoryViewHolder {
         public ImageView stadiumCategoryImageView;
         public TextView stadiumCategoryTitleTextView;

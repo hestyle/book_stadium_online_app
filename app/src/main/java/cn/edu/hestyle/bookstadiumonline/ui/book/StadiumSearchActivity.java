@@ -109,11 +109,11 @@ public class StadiumSearchActivity extends BaseActivity {
     private void getStadiumFromServer(String name, Integer pageIndex) {
         // 从服务器获取stadiumCategory
         FormBody formBody = new FormBody.Builder()
-                .add("name", "" + name)
+                .add("nameKey", "" + name)
                 .add("pageIndex", "" + pageIndex)
                 .add("pageSize", "" + PER_PAGE_COUNT)
                 .build();
-        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/stadium/findByName.do", null, formBody, new Callback() {
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/stadium/findByNameKeyAndPage.do", null, formBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 StadiumSearchActivity.this.runOnUiThread(()->{

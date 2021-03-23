@@ -215,12 +215,9 @@ public class MyFragment extends Fragment {
         leftSettingLayoutParams.topToTop = R.id.my_fragment_navigation_bar;
         leftSettingLayoutParams.bottomToBottom = R.id.my_fragment_navigation_bar;
         leftSettingImageButton.setLayoutParams(leftSettingLayoutParams);
-        leftSettingImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), SettingActivity.class);
-                startActivity(intent);
-            }
+        leftSettingImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), SettingActivity.class);
+            startActivity(intent);
         });
         // 设置right announcement
         ImageButton rightAnnouncementImageButton = new ImageButton(getActivity());
@@ -232,6 +229,10 @@ public class MyFragment extends Fragment {
         rightAnnouncementLayoutParams.topToTop = R.id.my_fragment_navigation_bar;
         rightAnnouncementLayoutParams.bottomToBottom = R.id.my_fragment_navigation_bar;
         rightAnnouncementImageButton.setLayoutParams(rightAnnouncementLayoutParams);
+        rightAnnouncementImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), SystemNoticeListActivity.class);
+            startActivity(intent);
+        });
         // 添加到common_title
         commonTitleConstraintLayout.addView(leftSettingImageButton);
         commonTitleConstraintLayout.addView(rightAnnouncementImageButton);
