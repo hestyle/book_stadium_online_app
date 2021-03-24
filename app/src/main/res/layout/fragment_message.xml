@@ -6,18 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".ui.message.MessageFragment">
 
+    <include android:id="@+id/chatVO_list_navigation_bar"
+        layout="@layout/include_common_navigation_bar"/>
+
     <TextView
-        android:id="@+id/text_message"
-        android:layout_width="match_parent"
+        android:id="@+id/tipsTextView"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:gravity="center_horizontal"
-        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chatVO_list_navigation_bar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="暂无结果"
+        android:textColor="@color/black"
+        android:textSize="18sp"/>
+
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/chatVOSmartRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chatVO_list_navigation_bar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--srlAccentColor srlPrimaryColor 将会改变 Header 和 Footer 的主题颜色-->
+        <!--srlEnablePreviewInEditMode 可以开启和关闭预览功能-->
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chatVORecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
