@@ -1,12 +1,14 @@
 package cn.edu.hestyle.bookstadiumonline.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +19,7 @@ import java.util.List;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.Chat;
 import cn.edu.hestyle.bookstadiumonline.entity.ChatVO;
+import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 
@@ -88,6 +91,12 @@ public class ChatVORecycleAdapter extends RecyclerView.Adapter<ChatVORecycleAdap
             holder.messageCountTextView.setText(String.format("%d", chatVO.getFromUnreadCount()));
             holder.messageCountTextView.setVisibility(View.VISIBLE);
         }
+
+        holder.chatConstraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(activityContext, ChattingActivity.class);
+            intent.putExtra("ChatVO", chatVO);
+            activityContext.startActivity(intent);
+        });
     }
 
     @Override
@@ -101,7 +110,8 @@ public class ChatVORecycleAdapter extends RecyclerView.Adapter<ChatVORecycleAdap
     }
 
     //内部类，绑定控件
-    static class ChatVOViewHolder extends RecyclerView.ViewHolder {
+    class ChatVOViewHolder extends RecyclerView.ViewHolder {
+        public ConstraintLayout chatConstraintLayout;
         public ImageView userAvatarImageView;
         public TextView usernameTextView;
         public TextView lastMessageContentTextView;
@@ -111,6 +121,7 @@ public class ChatVORecycleAdapter extends RecyclerView.Adapter<ChatVORecycleAdap
 
         public ChatVOViewHolder(View itemView) {
             super(itemView);
+            chatConstraintLayout = itemView.findViewById(R.id.chatConstraintLayout);
             userAvatarImageView = itemView.findViewById(R.id.userAvatarImageView);
             usernameTextView = itemView.findViewById(R.id.usernameTextView);
             lastMessageContentTextView = itemView.findViewById(R.id.lastMessageContentTextView);
