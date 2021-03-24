@@ -1,14 +1,18 @@
 package cn.edu.hestyle.bookstadiumonline.ui.message;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,6 +35,7 @@ import java.util.List;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.adapter.ChatVORecycleAdapter;
 import cn.edu.hestyle.bookstadiumonline.entity.ChatVO;
+import cn.edu.hestyle.bookstadiumonline.ui.my.SystemNoticeListActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -188,8 +193,25 @@ public class MessageFragment extends Fragment {
      * 设置navigationBar
      */
     private void navigationBarInit(String title) {
+        ConstraintLayout commonTitleConstraintLayout = this.rootView.findViewById(R.id.fragment_message_navigation_bar);
         // 设置title
         TextView titleTextView = rootView.findViewById(R.id.titleTextView);
         titleTextView.setText(title);
+        // 设置right announcement
+        ImageButton rightAnnouncementImageButton = new ImageButton(getActivity());
+        rightAnnouncementImageButton.setBackgroundColor(Color.TRANSPARENT);
+        rightAnnouncementImageButton.setImageResource(R.drawable.ic_announcement_24dp);
+        ConstraintLayout.LayoutParams rightAnnouncementLayoutParams = new ConstraintLayout.LayoutParams(56, 56);
+        rightAnnouncementLayoutParams.rightMargin = 15;
+        rightAnnouncementLayoutParams.endToEnd = R.id.fragment_message_navigation_bar;
+        rightAnnouncementLayoutParams.topToTop = R.id.fragment_message_navigation_bar;
+        rightAnnouncementLayoutParams.bottomToBottom = R.id.fragment_message_navigation_bar;
+        rightAnnouncementImageButton.setLayoutParams(rightAnnouncementLayoutParams);
+        rightAnnouncementImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), SystemNoticeListActivity.class);
+            startActivity(intent);
+        });
+        // 添加到common_title
+        commonTitleConstraintLayout.addView(rightAnnouncementImageButton);
     }
 }
