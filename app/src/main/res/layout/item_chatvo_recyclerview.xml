@@ -38,11 +38,14 @@
 
         <TextView
             android:id="@+id/lastMessageContentTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
             android:lines="1"
+            android:ellipsize="end"
             app:layout_constraintLeft_toRightOf="@id/userAvatarImageView"
+            app:layout_constraintRight_toLeftOf="@+id/messageCountBackgroundImageView"
             app:layout_constraintBottom_toBottomOf="@id/userAvatarImageView"
             android:text="lastMessageContent" />
 
