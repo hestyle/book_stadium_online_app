@@ -57,21 +57,39 @@ public class ChatVORecycleAdapter extends RecyclerView.Adapter<ChatVORecycleAdap
         if (LoginUserInfoUtil.getLoginUser() != null) {
             Integer userId = LoginUserInfoUtil.getLoginUser().getId();
             if ((chatVO.getChatType().equals(Chat.CHAT_TYPE_USER_TO_USER) || chatVO.getChatType().equals(Chat.CHAT_TYPE_USER_TO_MANAGER)) && chatVO.getFromAccountId().equals(userId)) {
-                // 用户信息
+                // 当前账号是chat发起者
                 if (chatVO.getToAccountAvatarPath() != null && chatVO.getToAccountAvatarPath().length() != 0) {
                     Glide.with(inflater.getContext())
                             .load(ServerSettingActivity.getServerHostUrl() + chatVO.getToAccountAvatarPath())
                             .into(holder.userAvatarImageView);
                 }
                 holder.usernameTextView.setText(String.format("%s", chatVO.getToAccountUsername()));
+                // 设置消息未读数
+                if (chatVO.getFromUnreadCount() == null || chatVO.getFromUnreadCount() == 0) {
+                    holder.messageCountBackgroundImageView.setVisibility(View.INVISIBLE);
+                    holder.messageCountTextView.setVisibility(View.INVISIBLE);
+                } else {
+                    holder.messageCountBackgroundImageView.setVisibility(View.VISIBLE);
+                    holder.messageCountTextView.setText(String.format("%d", chatVO.getFromUnreadCount()));
+                    holder.messageCountTextView.setVisibility(View.VISIBLE);
+                }
             } else {
-                // 用户信息
+                // 当前账号是chat接收者
                 if (chatVO.getFromAccountAvatarPath() != null && chatVO.getFromAccountAvatarPath().length() != 0) {
                     Glide.with(inflater.getContext())
                             .load(ServerSettingActivity.getServerHostUrl() + chatVO.getFromAccountAvatarPath())
                             .into(holder.userAvatarImageView);
                 }
                 holder.usernameTextView.setText(String.format("%s", chatVO.getFromAccountUsername()));
+                // 设置消息未读数
+                if (chatVO.getToUnreadCount() == null || chatVO.getToUnreadCount() == 0) {
+                    holder.messageCountBackgroundImageView.setVisibility(View.INVISIBLE);
+                    holder.messageCountTextView.setVisibility(View.INVISIBLE);
+                } else {
+                    holder.messageCountBackgroundImageView.setVisibility(View.VISIBLE);
+                    holder.messageCountTextView.setText(String.format("%d", chatVO.getToUnreadCount()));
+                    holder.messageCountTextView.setVisibility(View.VISIBLE);
+                }
             }
         }
 
@@ -83,15 +101,7 @@ public class ChatVORecycleAdapter extends RecyclerView.Adapter<ChatVORecycleAdap
             holder.setModifiedTime(chatVO.getCreatedTime());
             holder.lastMessageContentTextView.setVisibility(View.INVISIBLE);
         }
-        if (chatVO.getFromUnreadCount() == null || chatVO.getFromUnreadCount() == 0) {
-            holder.messageCountBackgroundImageView.setVisibility(View.INVISIBLE);
-            holder.messageCountTextView.setVisibility(View.INVISIBLE);
-        } else {
-            holder.messageCountBackgroundImageView.setVisibility(View.VISIBLE);
-            holder.messageCountTextView.setText(String.format("%d", chatVO.getFromUnreadCount()));
-            holder.messageCountTextView.setVisibility(View.VISIBLE);
-        }
-
+        // 进入聊天页面
         holder.chatConstraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(activityContext, ChattingActivity.class);
             intent.putExtra("ChatVO", chatVO);
