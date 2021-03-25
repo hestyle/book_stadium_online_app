@@ -452,11 +452,11 @@ public class ChattingActivity extends BaseActivity {
                     SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
                     if (dayDateFormat.format(date).equals(dayDateFormat.format(now))) {
                         // 当天的消息，只显示时间
-                        SimpleDateFormat timeDateFormat = new SimpleDateFormat("HH:mm");
+                        SimpleDateFormat timeDateFormat = new SimpleDateFormat("HH:mm:ss");
                         sendTimeTextView.setText(String.format("%s", timeDateFormat.format(date)));
                     } else if (yearDateFormat.format(date).equals(yearDateFormat.format(now))) {
-                        // 同一年的消息，只显示月份、日期
-                        SimpleDateFormat monthDateFormat = new SimpleDateFormat("MM-dd");
+                        // 同一年的消息，显示月份、日期 时间
+                        SimpleDateFormat monthDateFormat = new SimpleDateFormat("MM-dd HH:mm:ss");
                         sendTimeTextView.setText(String.format("%s", monthDateFormat.format(date)));
                     } else {
                         sendTimeTextView.setText(String.format("%s", dayDateFormat.format(date)));
