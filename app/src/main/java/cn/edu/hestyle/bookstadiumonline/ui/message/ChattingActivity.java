@@ -91,14 +91,15 @@ public class ChattingActivity extends BaseActivity {
         chatMessageSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-                ChattingActivity.this.nextPageIndex = 1;
+                // 访问下一页
                 ChattingActivity.this.getNextPageChatMessageFromServer();
             }
         });
         chatMessageSmartRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
-                // 访问下一页
+                // 往上拉，加载第1页
+                ChattingActivity.this.nextPageIndex = 1;
                 ChattingActivity.this.getNextPageChatMessageFromServer();
             }
         });
@@ -250,8 +251,8 @@ public class ChattingActivity extends BaseActivity {
         }
         if (this.nextPageIndex == 0) {
             Toast.makeText(this, "暂无更多内容！", Toast.LENGTH_SHORT).show();
-            chatMessageSmartRefreshLayout.finishLoadmore();
-            chatMessageSmartRefreshLayout.setLoadmoreFinished(true);
+            chatMessageSmartRefreshLayout.finishRefresh();
+            chatMessageSmartRefreshLayout.setEnableRefresh(false);
         }
         // 从服务器获取stadiumCategory
         FormBody formBody = new FormBody.Builder()
@@ -301,11 +302,11 @@ public class ChattingActivity extends BaseActivity {
                 boolean finalHasNextPage = hasNextPage;
                 ChattingActivity.this.runOnUiThread(()->{
                     if (ChattingActivity.this.nextPageIndex == 1) {
-                        // 访问第一页，也可能是刷新
-                        ChattingActivity.this.chatMessageSmartRefreshLayout.finishRefresh();
-                        ChattingActivity.this.chatMessageSmartRefreshLayout.setLoadmoreFinished(false);
-                    } else {
+                        // 访问第一页(上拉)，也可能是刷新
                         ChattingActivity.this.chatMessageSmartRefreshLayout.finishLoadmore();
+                        ChattingActivity.this.chatMessageSmartRefreshLayout.setEnableRefresh(true);
+                    } else {
+                        ChattingActivity.this.chatMessageSmartRefreshLayout.finishRefresh();
                     }
                     // 根据是否有下一页，修改nextPageIndex
                     if (finalHasNextPage) {
@@ -313,7 +314,7 @@ public class ChattingActivity extends BaseActivity {
                     } else {
                         ChattingActivity.this.nextPageIndex = 0;
                     }
-                    ChattingActivity.this.chatMessageSmartRefreshLayout.setLoadmoreFinished(!finalHasNextPage);
+                    ChattingActivity.this.chatMessageSmartRefreshLayout.setEnableRefresh(finalHasNextPage);
                     // update
                     ChattingActivity.this.chatMessageRecycleAdapter.updateData(ChattingActivity.this.chatMessageList);
                 });
