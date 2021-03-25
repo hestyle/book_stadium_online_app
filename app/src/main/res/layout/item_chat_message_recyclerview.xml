@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="5dp"
+    android:layout_marginHorizontal="15dp">
+
+    <TextView
+        android:id="@+id/sendTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:paddingBottom="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="yyyy-MM-dd HH:mm:ss"
+        android:textSize="13sp"
+        android:textColor="@color/black"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/leftConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/sendTimeTextView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/chatMessageLeftConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+
+            <ImageView
+                android:id="@+id/userAvatarLeftImageView"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:src="@drawable/ic_default_avatar" />
+
+            <ImageView
+                android:id="@+id/chatMessageLeftImageView"
+                android:layout_width="8dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/userAvatarLeftImageView"
+                android:src="@drawable/ic_chat_message_left" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:layout_marginRight="10dp"
+                app:layout_constraintTop_toTopOf="@+id/userAvatarLeftImageView"
+                app:layout_constraintLeft_toRightOf="@+id/chatMessageLeftImageView"
+                app:layout_constraintRight_toRightOf="parent">
+                <TextView
+                    android:id="@+id/contentLeftTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_chat_message_left_background"
+                    android:text="这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"/>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rightConstraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/sendTimeTextView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/chatMessageRightConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+
+            <ImageView
+                android:id="@+id/userAvatarRightImageView"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:src="@drawable/ic_default_avatar" />
+
+            <ImageView
+                android:id="@+id/chatMessageRightImageView"
+                android:layout_width="8dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/userAvatarRightImageView"
+                android:src="@drawable/ic_chat_message_right" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:layout_marginLeft="10dp"
+                app:layout_constraintTop_toTopOf="@+id/userAvatarRightImageView"
+                app:layout_constraintRight_toLeftOf="@+id/chatMessageRightImageView"
+                app:layout_constraintLeft_toLeftOf="parent">
+                <TextView
+                    android:id="@+id/contentRightTextView"
+                    android:layout_gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_chat_message_right_background"
+                    android:text="这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！这是消息内容！"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"/>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
