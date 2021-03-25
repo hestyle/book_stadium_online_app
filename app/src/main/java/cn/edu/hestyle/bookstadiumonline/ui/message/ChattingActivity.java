@@ -317,6 +317,10 @@ public class ChattingActivity extends BaseActivity {
                     ChattingActivity.this.chatMessageSmartRefreshLayout.setEnableRefresh(finalHasNextPage);
                     // update
                     ChattingActivity.this.chatMessageRecycleAdapter.updateData(ChattingActivity.this.chatMessageList);
+                    if (ChattingActivity.this.chatMessageList != null && ChattingActivity.this.chatMessageList.size() <= PER_PAGE_COUNT) {
+                        // 加载第1页数据（上拉），自动滚动到底部
+                        ChattingActivity.this.chatMessageRecyclerView.scrollToPosition(ChattingActivity.this.chatMessageRecycleAdapter.getItemCount() - 1);
+                    }
                 });
             }
         });
