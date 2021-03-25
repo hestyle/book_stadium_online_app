@@ -7,7 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +46,7 @@ import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
+import cn.edu.hestyle.bookstadiumonline.util.SoftKeyBoardListener;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -62,6 +67,10 @@ public class ChattingActivity extends BaseActivity {
     private SmartRefreshLayout chatMessageSmartRefreshLayout;
     private RecyclerView chatMessageRecyclerView;
     private ChatMessageRecycleAdapter chatMessageRecycleAdapter;
+
+    private View bottomView;
+    private EditText chatMessageEditText;
+    private Button sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +108,27 @@ public class ChattingActivity extends BaseActivity {
         chatMessageRecyclerView.setLayoutManager(linearLayoutManager);
         chatMessageRecycleAdapter = new ChatMessageRecycleAdapter(this, chatMessageList);
         chatMessageRecyclerView.setAdapter(chatMessageRecycleAdapter);
+
+        bottomView = findViewById(R.id.bottomView);
+        // 监听键盘弹出、隐藏事件，进而修改bottomView的高度，达到吸附键盘顶部的效果
+        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) ChattingActivity.this.bottomView.getLayoutParams();
+                layoutParams.height = height;
+                ChattingActivity.this.bottomView.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) ChattingActivity.this.bottomView.getLayoutParams();
+                layoutParams.height = 0;
+                ChattingActivity.this.bottomView.setLayoutParams(layoutParams);
+            }
+        });
+        chatMessageEditText = findViewById(R.id.chatMessageEditText);
+        sendButton = findViewById(R.id.sendButton);
+        sendButton.setOnClickListener(v -> ChattingActivity.this.sendChatMessage());
     }
 
     @Override
@@ -135,6 +165,80 @@ public class ChattingActivity extends BaseActivity {
         } else {
             Toast.makeText(this, "程序内部出现错误！聊天内容获取失败！", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 发送ChatMessage
+     */
+    private void sendChatMessage() {
+        // 生成表单
+        FormBody formBody = checkForm();
+        if (formBody == null) {
+            return;
+        }
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/chatMessage/userSend.do", null, formBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                ChattingActivity.this.runOnUiThread(()->{
+                    Toast.makeText(ChattingActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseString = response.body().string();
+                // 转json
+                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                Type type =  new TypeToken<ResponseResult<ChatMessage>>(){}.getType();
+                final ResponseResult<ChatMessage> responseResult = gson.fromJson(responseString, type);
+                ChattingActivity.this.runOnUiThread(()->{
+                    if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        ChattingActivity.this.chatMessageEditText.setText("");
+                        // 消息发送成功
+                        ChatMessage chatMessage = responseResult.getData();
+                        if (ChattingActivity.this.chatMessageList != null) {
+                            ChattingActivity.this.chatMessageList.add(chatMessage);
+                            ChattingActivity.this.chatMessageRecycleAdapter.notifyItemInserted(ChattingActivity.this.chatMessageList.size() - 1);
+                        } else {
+                            ChattingActivity.this.chatMessageList = new ArrayList<>();
+                            ChattingActivity.this.chatMessageList.add(chatMessage);
+                            ChattingActivity.this.chatMessageRecycleAdapter.updateData(ChattingActivity.this.chatMessageList);
+                        }
+                        ChattingActivity.this.chatMessageRecyclerView.scrollToPosition(ChattingActivity.this.chatMessageRecycleAdapter.getItemCount() - 1);
+                    } else {
+                        Toast.makeText(ChattingActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * 检查ChatMessage表单
+     * @return      FormBody
+     */
+    private FormBody checkForm() {
+        String content = this.chatMessageEditText.getText().toString();
+        if (chatVO == null) {
+            Toast.makeText(this, "聊天内容获取失败，无法发送消息！", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        if (content.length() == 0) {
+            Toast.makeText(this, "请输入发送的消息内容！", Toast.LENGTH_SHORT).show();
+            return null;
+        } else if (content.length() > ChatMessage.CHAT_MESSAGE_CONTENT_MAX_LENGTH) {
+            Toast.makeText(this, "消息过长，超过了" + ChatMessage.CHAT_MESSAGE_CONTENT_MAX_LENGTH + "个字符！", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setChatId(chatVO.getId());
+        chatMessage.setContent(content);
+        // 转json
+        Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+        String chatMessageData = gson.toJson(chatMessage);
+        return new FormBody.Builder()
+                .add("chatMessageData", chatMessageData)
+                .build();
     }
 
     /**
