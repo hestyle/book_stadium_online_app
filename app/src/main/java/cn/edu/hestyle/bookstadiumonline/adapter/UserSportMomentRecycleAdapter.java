@@ -90,6 +90,12 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             intent.putExtra("otherUserId", userSportMoment.getUserId());
             activityContext.startActivity(intent);
         });
+        // 如果该SportMoment是当前用户发表的，则不显示"私信"
+        if (userSportMoment.getUserId().equals(LoginUserInfoUtil.getLoginUser().getId())) {
+            holder.chatActionTextView.setVisibility(View.INVISIBLE);
+        } else {
+            holder.chatActionTextView.setVisibility(View.VISIBLE);
+        }
         // 动态信息
         holder.userSportMomentInfoConstraintLayout.setOnClickListener(v -> {
             // 跳转到详情页面

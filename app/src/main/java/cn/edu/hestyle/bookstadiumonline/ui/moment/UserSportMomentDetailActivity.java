@@ -631,6 +631,12 @@ public class UserSportMomentDetailActivity extends BaseActivity {
                 intent.putExtra("otherUserId", userSportMomentComment.getUserId());
                 activityContext.startActivity(intent);
             });
+            // 如果该SportMomentComment是当前用户发表的，则不显示"私信"
+            if (userSportMomentComment.getUserId().equals(LoginUserInfoUtil.getLoginUser().getId())) {
+                holder.chatActionTextView.setVisibility(View.INVISIBLE);
+            } else {
+                holder.chatActionTextView.setVisibility(View.VISIBLE);
+            }
             // 动态信息
             if (userSportMomentComment.getParentId() != null) {
                 holder.parentContentTextView.setText(String.format("回复：%s", userSportMomentComment.getParentContent()));
