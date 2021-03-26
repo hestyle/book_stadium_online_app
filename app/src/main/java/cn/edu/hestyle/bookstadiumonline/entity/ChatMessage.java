@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class ChatMessage implements Serializable {
+    /** ChatMessage content的最大长度 */
+    public static final Integer CHAT_MESSAGE_CONTENT_MAX_LENGTH = 500;
+
     /** id */
     private Integer id;
     /** chatId */

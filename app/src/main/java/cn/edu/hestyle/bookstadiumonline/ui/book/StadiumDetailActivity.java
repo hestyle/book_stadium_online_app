@@ -29,7 +29,9 @@ import java.util.List;
 import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.Stadium;
+import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
@@ -94,7 +96,18 @@ public class StadiumDetailActivity extends BaseActivity {
         // 咨询场馆管理员
         TextView stadiumManagerTextView = findViewById(R.id.stadiumManagerTextView);
         stadiumManagerTextView.setOnClickListener(v -> {
-            Toast.makeText(StadiumDetailActivity.this, "点击了场馆管理员", Toast.LENGTH_SHORT).show();
+            if (LoginUserInfoUtil.getLoginUser() == null) {
+                Toast.makeText(StadiumDetailActivity.this, "请先进行登录！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (StadiumDetailActivity.this.stadium == null) {
+                Toast.makeText(StadiumDetailActivity.this, "程序内部发生错误！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 跳转到聊天页面
+            Intent chattingActivityIntent = new Intent(StadiumDetailActivity.this, ChattingActivity.class);
+            chattingActivityIntent.putExtra("stadiumManagerId", StadiumDetailActivity.this.stadium.getStadiumManagerId());
+            StadiumDetailActivity.this.startActivity(chattingActivityIntent);
         });
 
         // 立即预约action
