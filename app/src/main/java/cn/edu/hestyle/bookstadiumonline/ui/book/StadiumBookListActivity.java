@@ -36,7 +36,9 @@ import java.util.List;
 import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.StadiumBook;
+import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 import okhttp3.Call;
@@ -249,7 +251,18 @@ public class StadiumBookListActivity extends BaseActivity {
         rightStadiumManagerLayoutParams.bottomToBottom = R.id.stadium_book_list_navigation_bar;
         rightStadiumManagerImageButton.setLayoutParams(rightStadiumManagerLayoutParams);
         rightStadiumManagerImageButton.setOnClickListener(v -> {
-            Toast.makeText(StadiumBookListActivity.this, "点击了场馆管理员 " + StadiumBookListActivity.this.stadiumManagerId, Toast.LENGTH_SHORT).show();
+            if (LoginUserInfoUtil.getLoginUser() == null) {
+                Toast.makeText(StadiumBookListActivity.this, "请先进行登录！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (StadiumBookListActivity.this.stadiumManagerId == null) {
+                Toast.makeText(StadiumBookListActivity.this, "程序内部发生错误！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 跳转到聊天页面
+            Intent chattingActivityIntent = new Intent(StadiumBookListActivity.this, ChattingActivity.class);
+            chattingActivityIntent.putExtra("stadiumManagerId", StadiumBookListActivity.this.stadiumManagerId);
+            StadiumBookListActivity.this.startActivity(chattingActivityIntent);
         });
         commonTitleConstraintLayout.addView(rightStadiumManagerImageButton);
     }

@@ -82,12 +82,16 @@ public class ChattingActivity extends BaseActivity {
         Intent intent = getIntent();
         chatVO = (ChatVO) intent.getSerializableExtra("ChatVO");
         int otherUserId = intent.getIntExtra("otherUserId", -1);
+        int stadiumManagerId = intent.getIntExtra("stadiumManagerId", -1);
 
         if (chatVO != null) {
             init();
         } else if (otherUserId != -1) {
             // 获取chat
             getChatWithUserFromServer(otherUserId);
+        } else if (stadiumManagerId != -1) {
+            // 获取chat
+            getChatWithStadiumManagerFromServer(stadiumManagerId);
         }
 
         this.nextPageIndex = 1;
@@ -183,6 +187,41 @@ public class ChattingActivity extends BaseActivity {
     private void getChatWithUserFromServer(Integer otherUserId) {
         FormBody formBody = new FormBody.Builder().add("otherUserId", otherUserId + "").build();
         OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/chat/userGetChatWithUser.do", null, formBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                ChattingActivity.this.runOnUiThread(()->{
+                    Toast.makeText(ChattingActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseString = response.body().string();
+                // 转json
+                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                Type type =  new TypeToken<ResponseResult<ChatVO>>(){}.getType();
+                final ResponseResult<ChatVO> responseResult = gson.fromJson(responseString, type);
+                ChattingActivity.this.runOnUiThread(()->{
+                    if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        ChattingActivity.this.chatMessageEditText.setText("");
+                        // chat获取成功
+                        ChattingActivity.this.chatVO = responseResult.getData();
+                        ChattingActivity.this.init();
+                    } else {
+                        Toast.makeText(ChattingActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * 从服务器获取chat
+     * @param stadiumManagerId   stadiumManagerId
+     */
+    private void getChatWithStadiumManagerFromServer(Integer stadiumManagerId) {
+        FormBody formBody = new FormBody.Builder().add("stadiumManagerId", stadiumManagerId + "").build();
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/chat/userGetChatWithStadiumManager.do", null, formBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 ChattingActivity.this.runOnUiThread(()->{
