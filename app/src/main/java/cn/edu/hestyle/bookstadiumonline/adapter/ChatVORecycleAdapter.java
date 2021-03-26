@@ -62,6 +62,9 @@ public class ChatVORecycleAdapter extends RecyclerView.Adapter<ChatVORecycleAdap
                     Glide.with(inflater.getContext())
                             .load(ServerSettingActivity.getServerHostUrl() + chatVO.getToAccountAvatarPath())
                             .into(holder.userAvatarImageView);
+                } else {
+                    // 无头像，则显示默认头像
+                    holder.userAvatarImageView.setImageResource(R.drawable.ic_default_avatar);
                 }
                 holder.usernameTextView.setText(String.format("%s", chatVO.getToAccountUsername()));
                 // 设置消息未读数
@@ -79,6 +82,9 @@ public class ChatVORecycleAdapter extends RecyclerView.Adapter<ChatVORecycleAdap
                     Glide.with(inflater.getContext())
                             .load(ServerSettingActivity.getServerHostUrl() + chatVO.getFromAccountAvatarPath())
                             .into(holder.userAvatarImageView);
+                } else {
+                    // 无头像，则显示默认头像
+                    holder.userAvatarImageView.setImageResource(R.drawable.ic_default_avatar);
                 }
                 holder.usernameTextView.setText(String.format("%s", chatVO.getFromAccountUsername()));
                 // 设置消息未读数
