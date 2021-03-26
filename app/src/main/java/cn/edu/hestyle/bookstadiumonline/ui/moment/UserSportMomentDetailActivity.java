@@ -40,6 +40,7 @@ import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMomentComment;
+import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -621,7 +622,14 @@ public class UserSportMomentDetailActivity extends BaseActivity {
             }
             holder.usernameTextView.setText(String.format("%s", userSportMomentComment.getCommentUsername()));
             holder.chatActionTextView.setOnClickListener(v -> {
-                Toast.makeText(activityContext, "点击了私信用户 userId = " + userSportMomentComment.getUserId(), Toast.LENGTH_SHORT).show();
+                if (LoginUserInfoUtil.getLoginUser() == null) {
+                    Toast.makeText(activityContext, "请先进行登录！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // 跳转到聊天页面
+                Intent intent = new Intent(activityContext, ChattingActivity.class);
+                intent.putExtra("otherUserId", userSportMomentComment.getUserId());
+                activityContext.startActivity(intent);
             });
             // 动态信息
             if (userSportMomentComment.getParentId() != null) {

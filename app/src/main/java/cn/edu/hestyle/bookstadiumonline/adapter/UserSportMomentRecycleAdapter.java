@@ -28,6 +28,7 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
+import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.moment.UserSportMomentDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
@@ -80,7 +81,14 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
         }
         holder.usernameTextView.setText(String.format("%s", userSportMoment.getUsername()));
         holder.chatActionTextView.setOnClickListener(v -> {
-            Toast.makeText(activityContext, "点击了私信用户 userId = " + userSportMoment.getUserId(), Toast.LENGTH_SHORT).show();
+            if (LoginUserInfoUtil.getLoginUser() == null) {
+                Toast.makeText(activityContext, "请先进行登录！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 跳转到聊天页面
+            Intent intent = new Intent(activityContext, ChattingActivity.class);
+            intent.putExtra("otherUserId", userSportMoment.getUserId());
+            activityContext.startActivity(intent);
         });
         // 动态信息
         holder.userSportMomentInfoConstraintLayout.setOnClickListener(v -> {

@@ -77,11 +77,17 @@ public class ChattingActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatting);
 
+        navigationBarInit("聊天");
+
         Intent intent = getIntent();
         chatVO = (ChatVO) intent.getSerializableExtra("ChatVO");
+        int otherUserId = intent.getIntExtra("otherUserId", -1);
 
         if (chatVO != null) {
-            initUserInfo();
+            init();
+        } else if (otherUserId != -1) {
+            // 获取chat
+            getChatWithUserFromServer(otherUserId);
         }
 
         this.nextPageIndex = 1;
@@ -135,18 +141,16 @@ public class ChattingActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (LoginUserInfoUtil.getLoginUser() != null) {
-            // 获取ChatMessage
-            this.nextPageIndex = 1;
-            this.chatMessageList = null;
-            getNextPageChatMessageFromServer();
-        } else {
+        if (LoginUserInfoUtil.getLoginUser() == null) {
             Toast.makeText(this, "请先进行登录！", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
 
-    private void initUserInfo() {
+    /**
+     * 初始化chatVO
+     */
+    private void init() {
         Integer userId = LoginUserInfoUtil.getLoginUser().getId();
         if (chatVO != null) {
             if ((chatVO.getChatType().equals(Chat.CHAT_TYPE_USER_TO_USER) || chatVO.getChatType().equals(Chat.CHAT_TYPE_USER_TO_MANAGER)) && chatVO.getFromAccountId().equals(userId)) {
@@ -163,9 +167,48 @@ public class ChattingActivity extends BaseActivity {
                 usernameRight = chatVO.getToAccountUsername();
             }
             navigationBarInit(usernameLeft);
+            // 获取ChatMessage
+            this.nextPageIndex = 1;
+            this.chatMessageList = null;
+            getNextPageChatMessageFromServer();
         } else {
             Toast.makeText(this, "程序内部出现错误！聊天内容获取失败！", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 从服务器获取chat
+     * @param otherUserId   对方userId
+     */
+    private void getChatWithUserFromServer(Integer otherUserId) {
+        FormBody formBody = new FormBody.Builder().add("otherUserId", otherUserId + "").build();
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/chat/userGetChatWithUser.do", null, formBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                ChattingActivity.this.runOnUiThread(()->{
+                    Toast.makeText(ChattingActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseString = response.body().string();
+                // 转json
+                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                Type type =  new TypeToken<ResponseResult<ChatVO>>(){}.getType();
+                final ResponseResult<ChatVO> responseResult = gson.fromJson(responseString, type);
+                ChattingActivity.this.runOnUiThread(()->{
+                    if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                        ChattingActivity.this.chatMessageEditText.setText("");
+                        // chat获取成功
+                        ChattingActivity.this.chatVO = responseResult.getData();
+                        ChattingActivity.this.init();
+                    } else {
+                        Toast.makeText(ChattingActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     /**
