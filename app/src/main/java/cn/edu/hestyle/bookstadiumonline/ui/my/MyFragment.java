@@ -119,6 +119,13 @@ public class MyFragment extends Fragment {
             }
         });
 
+        // 查看运动常识action
+        ConstraintLayout sportKnowledgeConstraintLayout = this.rootView.findViewById(R.id.sportKnowledgeConstraintLayout);
+        sportKnowledgeConstraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(MyFragment.this.getContext(), SportKnowledgeListActivity.class);
+            startActivity(intent);
+        });
+
         return this.rootView;
     }
 
