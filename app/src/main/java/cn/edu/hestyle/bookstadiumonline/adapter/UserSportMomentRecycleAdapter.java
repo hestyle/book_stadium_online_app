@@ -91,7 +91,7 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
             activityContext.startActivity(intent);
         });
         // 如果该SportMoment是当前用户发表的，则不显示"私信"
-        if (userSportMoment.getUserId().equals(LoginUserInfoUtil.getLoginUser().getId())) {
+        if (LoginUserInfoUtil.getLoginUser() != null && userSportMoment.getUserId().equals(LoginUserInfoUtil.getLoginUser().getId())) {
             holder.chatActionTextView.setVisibility(View.INVISIBLE);
         } else {
             holder.chatActionTextView.setVisibility(View.VISIBLE);
