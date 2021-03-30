@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.ui.my;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -232,7 +233,10 @@ public class SportKnowledgeListActivity extends BaseActivity {
             }
             // 点击事件
             holder.sportKnowledgeConstraintLayout.setOnClickListener(v -> {
-                Toast.makeText(activityContext, "点击了" + sportKnowledge.getTitle(), Toast.LENGTH_SHORT).show();
+                // 进入运动常识详情页面
+                Intent intent = new Intent(activityContext, SportKnowledgeDetailActivity.class);
+                intent.putExtra("SportKnowledge", sportKnowledge);
+                activityContext.startActivity(intent);
             });
         }
 
