@@ -15,6 +15,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Book_stadium_online_app">
+        <activity android:name=".ui.my.SportKnowledgeListActivity"></activity>
         <activity android:name=".ui.message.ChattingActivity" />
         <activity android:name=".ui.my.SystemNoticeListActivity" />
         <activity android:name=".ui.my.MySportMomentEditActivity" />
