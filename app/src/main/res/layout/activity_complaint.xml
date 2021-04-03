@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.message.ComplaintActivity">
+
+    <include android:id="@+id/complaint_navigation_bar"
+        layout="@layout/include_back_navigation_bar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/complaint_navigation_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:id="@+id/titleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:text="标题："
+                    android:textSize="15sp"/>
+
+                <EditText
+                    android:id="@+id/titleEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:lines="1"
+                    app:layout_constraintTop_toBottomOf="@+id/titleTextView"
+                    app:layout_constraintLeft_toLeftOf="@+id/titleTextView"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:hint="请输入标题"
+                    android:textSize="15sp"
+                    android:background="@drawable/border_all_around_and_radio"/>
+
+                <TextView
+                    android:id="@+id/descriptionTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintTop_toBottomOf="@id/titleEditText"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:text="描述："
+                    android:textSize="15sp"/>
+
+                <EditText
+                    android:id="@+id/descriptionEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="120dp"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    app:layout_constraintTop_toBottomOf="@+id/descriptionTitleTextView"
+                    app:layout_constraintLeft_toLeftOf="@+id/descriptionTitleTextView"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:hint="请输入你想表达的文字内容~"
+                    android:textSize="15sp"
+                    android:background="@drawable/border_all_around_and_radio"/>
+
+                <TextView
+                    android:id="@+id/uploadImageTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintTop_toBottomOf="@id/descriptionEditText"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:text="上传图片："
+                    android:textSize="15sp"/>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/oneImageConstraintLayout"
+                    android:layout_width="109dp"
+                    android:layout_height="109dp"
+                    app:layout_constraintTop_toBottomOf="@+id/uploadImageTitleTextView"
+                    app:layout_constraintLeft_toLeftOf="@+id/uploadImageTitleTextView"
+                    app:layout_constraintRight_toLeftOf="@+id/twoImageConstraintLayout">
+
+                    <ImageView
+                        android:id="@+id/oneImageView"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginRight="9dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:src="@drawable/ic_upload_image" />
+
+                    <ImageView
+                        android:id="@+id/oneImageDeleteImageView"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:src="@drawable/ic_delete"
+                        android:visibility="visible"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/twoImageConstraintLayout"
+                    android:layout_width="109dp"
+                    android:layout_height="109dp"
+                    app:layout_constraintTop_toBottomOf="@+id/uploadImageTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@+id/oneImageConstraintLayout"
+                    app:layout_constraintRight_toLeftOf="@+id/threeImageConstraintLayout">
+
+                    <ImageView
+                        android:id="@+id/twoImageView"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginRight="9dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:src="@drawable/ic_upload_image" />
+
+                    <ImageView
+                        android:id="@+id/twoImageDeleteImageView"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:src="@drawable/ic_delete"
+                        android:visibility="visible"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/threeImageConstraintLayout"
+                    android:layout_width="109dp"
+                    android:layout_height="109dp"
+                    app:layout_constraintTop_toBottomOf="@+id/uploadImageTitleTextView"
+                    app:layout_constraintLeft_toRightOf="@id/twoImageConstraintLayout"
+                    app:layout_constraintRight_toRightOf="parent">
+
+                    <ImageView
+                        android:id="@+id/threeImageView"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginRight="9dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:src="@drawable/ic_upload_image" />
+
+                    <ImageView
+                        android:id="@+id/threeImageDeleteImageView"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:src="@drawable/ic_delete"
+                        android:visibility="visible"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_marginTop="10dp"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="保存" />
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

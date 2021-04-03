@@ -2,6 +2,7 @@ package cn.edu.hestyle.bookstadiumonline.ui.message;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.Chat;
 import cn.edu.hestyle.bookstadiumonline.entity.ChatMessage;
 import cn.edu.hestyle.bookstadiumonline.entity.ChatVO;
+import cn.edu.hestyle.bookstadiumonline.entity.Complaint;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -412,12 +414,49 @@ public class ChattingActivity extends BaseActivity {
      * 设置navigationBar
      */
     private void navigationBarInit(String title) {
+        ConstraintLayout commonTitleConstraintLayout = findViewById(R.id.chatting_navigation_bar);
         // 设置title
         TextView titleTextView = this.findViewById(R.id.titleTextView);
         titleTextView.setText(String.format("%s", title));
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(v -> finish());
+
+        TextView textView = new TextView(this);
+        textView.setText("投诉");
+        textView.setTextColor(Color.WHITE);
+        textView.setTextSize(16);
+        ConstraintLayout.LayoutParams rightAnnouncementLayoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        rightAnnouncementLayoutParams.rightMargin = 15;
+        rightAnnouncementLayoutParams.endToEnd = R.id.chatting_navigation_bar;
+        rightAnnouncementLayoutParams.topToTop = R.id.chatting_navigation_bar;
+        rightAnnouncementLayoutParams.bottomToBottom = R.id.chatting_navigation_bar;
+        textView.setLayoutParams(rightAnnouncementLayoutParams);
+        textView.setOnClickListener(v -> {
+            Intent intent = new Intent(ChattingActivity.this, ComplaintActivity.class);
+            if (chatVO != null) {
+                // 判断投诉类型、投诉用户的id
+                if (chatVO.getChatType().equals(Chat.CHAT_TYPE_USER_TO_MANAGER)) {
+                    intent.putExtra("respondentAccountType", Complaint.COMPLAIN_ACCOUNT_TYPE_STADIUM_MANAGER);
+                    intent.putExtra("respondentAccountId", chatVO.getToAccountId());
+                } else if (chatVO.getChatType().equals(Chat.CHAT_TYPE_MANAGER_TO_USER)) {
+                    intent.putExtra("respondentAccountType", Complaint.COMPLAIN_ACCOUNT_TYPE_STADIUM_MANAGER);
+                    intent.putExtra("respondentAccountId", chatVO.getFromAccountId());
+                } else if (chatVO.getChatType().equals(Chat.CHAT_TYPE_USER_TO_USER)) {
+                    intent.putExtra("respondentAccountType", Complaint.COMPLAIN_ACCOUNT_TYPE_USER);
+                    if (chatVO.getFromAccountId().equals(LoginUserInfoUtil.getLoginUser().getId())) {
+                        intent.putExtra("respondentAccountId", chatVO.getToAccountId());
+                    } else {
+                        intent.putExtra("respondentAccountId", chatVO.getFromAccountId());
+                    }
+                }
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "程序内部发生数据传递错误！", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // 添加到common_title
+        commonTitleConstraintLayout.addView(textView);
     }
 
     class ChatMessageRecycleAdapter extends RecyclerView.Adapter<ChatMessageRecycleAdapter.ChatMessageViewHolder> {
