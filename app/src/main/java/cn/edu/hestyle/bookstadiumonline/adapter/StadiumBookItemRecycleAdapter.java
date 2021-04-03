@@ -1,6 +1,7 @@
 package cn.edu.hestyle.bookstadiumonline.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,9 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.StadiumBookItem;
+import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 
 public class StadiumBookItemRecycleAdapter extends RecyclerView.Adapter<StadiumBookItemRecycleAdapter.StadiumBookItemViewHolder> {
@@ -64,8 +67,21 @@ public class StadiumBookItemRecycleAdapter extends RecyclerView.Adapter<StadiumB
         holder.bookedTimeTextView.setText(String.format("%s", simpleDateFormat.format(stadiumBookItem.getBookedTime())));
         // 私信
         holder.chatActionTextView.setOnClickListener(v -> {
-            Toast.makeText(context, "私信" + stadiumBookItem.getUsername(), Toast.LENGTH_SHORT).show();
+            if (LoginUserInfoUtil.getLoginUser() == null) {
+                Toast.makeText(context, "请先进行登录！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 跳转到聊天页面
+            Intent intent = new Intent(context, ChattingActivity.class);
+            intent.putExtra("otherUserId", stadiumBookItem.getUserId());
+            context.startActivity(intent);
         });
+        // 如果该SportMoment是当前用户发表的，则不显示"私信"
+        if (LoginUserInfoUtil.getLoginUser() != null && stadiumBookItem.getUserId().equals(LoginUserInfoUtil.getLoginUser().getId())) {
+            holder.chatActionTextView.setVisibility(View.INVISIBLE);
+        } else {
+            holder.chatActionTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
