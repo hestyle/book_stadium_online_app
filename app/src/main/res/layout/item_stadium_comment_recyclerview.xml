@@ -90,11 +90,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:layout_marginRight="60dp"
         app:layout_constraintTop_toBottomOf="@id/userTitleConstraintLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:text="评论日期"
         android:textSize="13sp"/>
+
+    <TextView
+        android:id="@+id/reportTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/ic_report"
+        app:layout_constraintBaseline_toBaselineOf="@+id/commentedTimeTextView"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="举报" />
 
     <TextView
         android:id="@+id/commentContentTextView"
