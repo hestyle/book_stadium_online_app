@@ -2,11 +2,14 @@ package cn.edu.hestyle.bookstadiumonline.ui.book;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
@@ -28,8 +31,10 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
+import cn.edu.hestyle.bookstadiumonline.entity.Report;
 import cn.edu.hestyle.bookstadiumonline.entity.Stadium;
 import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
+import cn.edu.hestyle.bookstadiumonline.ui.moment.ReportActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
@@ -220,11 +225,36 @@ public class StadiumDetailActivity extends BaseActivity {
      * 设置navigationBar
      */
     private void navigationBarInit(String title) {
+        ConstraintLayout commonTitleConstraintLayout = findViewById(R.id.stadium_detail_navigation_bar);
         // 设置title
         TextView titleTextView = this.findViewById(R.id.titleTextView);
         titleTextView.setText(title);
         // 设置返回
         TextView backTitleTextView = this.findViewById(R.id.backTextView);
         backTitleTextView.setOnClickListener(v -> finish());
+
+        TextView textView = new TextView(this);
+        textView.setText("举报");
+        textView.setTextColor(Color.WHITE);
+        textView.setTextSize(16);
+        ConstraintLayout.LayoutParams rightAnnouncementLayoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+        rightAnnouncementLayoutParams.rightMargin = 15;
+        rightAnnouncementLayoutParams.endToEnd = R.id.stadium_detail_navigation_bar;
+        rightAnnouncementLayoutParams.topToTop = R.id.stadium_detail_navigation_bar;
+        rightAnnouncementLayoutParams.bottomToBottom = R.id.stadium_detail_navigation_bar;
+        textView.setLayoutParams(rightAnnouncementLayoutParams);
+        textView.setOnClickListener(v -> {
+            if (LoginUserInfoUtil.getLoginUser() == null) {
+                Toast.makeText(StadiumDetailActivity.this, "请先进行登录！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 跳转到举报页面
+            Intent intent = new Intent(StadiumDetailActivity.this, ReportActivity.class);
+            intent.putExtra("reportContentType", Report.REPORT_CONTENT_TYPE_STADIUM);
+            intent.putExtra("reportContentId", stadium.getId());
+            StadiumDetailActivity.this.startActivity(intent);
+        });
+        // 添加到common_title
+        commonTitleConstraintLayout.addView(textView);
     }
 }
