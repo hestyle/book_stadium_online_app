@@ -1,14 +1,12 @@
 package cn.edu.hestyle.bookstadiumonline.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,13 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
-import cn.edu.hestyle.bookstadiumonline.entity.Report;
 import cn.edu.hestyle.bookstadiumonline.entity.StadiumComment;
 import cn.edu.hestyle.bookstadiumonline.entity.User;
-import cn.edu.hestyle.bookstadiumonline.ui.book.StadiumDetailActivity;
-import cn.edu.hestyle.bookstadiumonline.ui.moment.ReportActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
-import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
 
 public class StadiumCommentRecycleAdapter extends RecyclerView.Adapter<StadiumCommentRecycleAdapter.StadiumCommentViewHolder> {
@@ -85,18 +79,6 @@ public class StadiumCommentRecycleAdapter extends RecyclerView.Adapter<StadiumCo
         } else {
             holder.managerReplyTextView.setVisibility(View.GONE);
         }
-        // 举报
-        holder.reportTextView.setOnClickListener(v -> {
-            if (LoginUserInfoUtil.getLoginUser() == null) {
-                Toast.makeText(context, "请先进行登录！", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            // 跳转到举报页面
-            Intent intent = new Intent(context, ReportActivity.class);
-            intent.putExtra("reportContentType", Report.REPORT_CONTENT_TYPE_STADIUM_COMMENT);
-            intent.putExtra("reportContentId", stadiumComment.getId());
-            context.startActivity(intent);
-        });
     }
 
     @Override
@@ -121,7 +103,6 @@ public class StadiumCommentRecycleAdapter extends RecyclerView.Adapter<StadiumCo
         public TextView commentedTimeTextView;
         public TextView commentContentTextView;
         public TextView managerReplyTextView;
-        public TextView reportTextView;
 
         public StadiumCommentViewHolder(View itemView) {
             super(itemView);
@@ -135,7 +116,6 @@ public class StadiumCommentRecycleAdapter extends RecyclerView.Adapter<StadiumCo
             commentedTimeTextView = itemView.findViewById(R.id.commentedTimeTextView);
             commentContentTextView = itemView.findViewById(R.id.commentContentTextView);
             managerReplyTextView = itemView.findViewById(R.id.managerReplyTextView);
-            reportTextView = itemView.findViewById(R.id.reportTextView);
         }
 
         public void setStarCount(Integer starCount) {
