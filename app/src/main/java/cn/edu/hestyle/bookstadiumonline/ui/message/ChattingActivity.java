@@ -496,7 +496,7 @@ public class ChattingActivity extends BaseActivity {
                 return;
             }
             Integer userId = LoginUserInfoUtil.getLoginUser().getId();
-            if (chatMessage.getFromAccountId().equals(userId) && (chatMessage.getChatType().equals(Chat.CHAT_TYPE_USER_TO_USER) || chatMessage.getChatType().equals(Chat.CHAT_TYPE_USER_TO_MANAGER))) {
+            if (chatMessage.getFromAccountId().equals(userId) && (chatMessage.getMessageType().equals(ChatMessage.MESSAGE_TYPE_USER_TO_USER) || chatMessage.getMessageType().equals(ChatMessage.MESSAGE_TYPE_USER_TO_MANAGER))) {
                 // 我发给对方的消息
                 holder.leftConstraintLayout.setVisibility(View.GONE);
                 holder.rightConstraintLayout.setVisibility(View.VISIBLE);
