@@ -27,8 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.R;
+import cn.edu.hestyle.bookstadiumonline.entity.Report;
 import cn.edu.hestyle.bookstadiumonline.entity.UserSportMoment;
 import cn.edu.hestyle.bookstadiumonline.ui.message.ChattingActivity;
+import cn.edu.hestyle.bookstadiumonline.ui.moment.ReportActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.moment.UserSportMomentDetailActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
@@ -138,7 +140,15 @@ public class UserSportMomentRecycleAdapter extends RecyclerView.Adapter<UserSpor
 
         // 举报
         holder.reportTextView.setOnClickListener(v -> {
-            Toast.makeText(activityContext, "点击了举报 sportMomentId = " + userSportMoment.getSportMomentId(), Toast.LENGTH_SHORT).show();
+            if (LoginUserInfoUtil.getLoginUser() == null) {
+                Toast.makeText(activityContext, "请先进行登录！", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            // 跳转到举报页面
+            Intent intent = new Intent(activityContext, ReportActivity.class);
+            intent.putExtra("reportContentType", Report.REPORT_CONTENT_TYPE_SPORT_MOMENT);
+            intent.putExtra("reportContentId", userSportMoment.getSportMomentId());
+            activityContext.startActivity(intent);
         });
         // 点赞
         holder.setLikeCount(userSportMoment.getLikeCount());

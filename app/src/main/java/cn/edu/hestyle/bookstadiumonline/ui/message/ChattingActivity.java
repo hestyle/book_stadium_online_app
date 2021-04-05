@@ -64,7 +64,7 @@ public class ChattingActivity extends BaseActivity {
     private String usernameRight;
     /** 一页的数量 */
     private static final Integer PER_PAGE_COUNT = 10;
-    private Integer nextPageIndex;
+    private Boolean hasBeforePageChatMessage;
     private List<ChatMessage> chatMessageList;
     private SmartRefreshLayout chatMessageSmartRefreshLayout;
     private RecyclerView chatMessageRecyclerView;
@@ -96,23 +96,22 @@ public class ChattingActivity extends BaseActivity {
             getChatWithStadiumManagerFromServer(stadiumManagerId);
         }
 
-        this.nextPageIndex = 1;
-        this.chatMessageList = null;
+        this.hasBeforePageChatMessage = true;
+        this.chatMessageList = new ArrayList<>();
 
         chatMessageSmartRefreshLayout = findViewById(R.id.chatMessageSmartRefreshLayout);
         chatMessageSmartRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-                // 访问下一页
-                ChattingActivity.this.getNextPageChatMessageFromServer();
+                // 访问前一页
+                ChattingActivity.this.getBeforePageChatMessageFromServer();
             }
         });
         chatMessageSmartRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
-                // 往上拉，加载第1页
-                ChattingActivity.this.nextPageIndex = 1;
-                ChattingActivity.this.getNextPageChatMessageFromServer();
+                // 往上拉，加载最新
+                ChattingActivity.this.getAfterPageChatMessageFromServer();
             }
         });
         chatMessageRecyclerView = findViewById(R.id.chatMessageRecyclerView);
@@ -174,9 +173,9 @@ public class ChattingActivity extends BaseActivity {
             }
             navigationBarInit(usernameLeft);
             // 获取ChatMessage
-            this.nextPageIndex = 1;
+            this.hasBeforePageChatMessage = true;
             this.chatMessageList = null;
-            getNextPageChatMessageFromServer();
+            getBeforePageChatMessageFromServer();
         } else {
             Toast.makeText(this, "程序内部出现错误！聊天内容获取失败！", Toast.LENGTH_SHORT).show();
         }
@@ -327,24 +326,31 @@ public class ChattingActivity extends BaseActivity {
     }
 
     /**
-     * 获取下一页ChatMessage
+     * 获取上一页ChatMessage
      */
-    private void getNextPageChatMessageFromServer() {
+    private void getBeforePageChatMessageFromServer() {
         if (chatVO == null) {
             return;
         }
-        if (this.nextPageIndex == 0) {
+        if (!this.hasBeforePageChatMessage) {
             Toast.makeText(this, "暂无更多内容！", Toast.LENGTH_SHORT).show();
             chatMessageSmartRefreshLayout.finishRefresh();
             chatMessageSmartRefreshLayout.setEnableRefresh(false);
         }
-        // 从服务器获取stadiumCategory
-        FormBody formBody = new FormBody.Builder()
-                .add("chatId", "" + chatVO.getId())
-                .add("pageIndex", "" + nextPageIndex)
-                .add("pageSize", "" + PER_PAGE_COUNT)
-                .build();
-        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/chatMessage/userFindByChatIdAndPage.do", null, formBody, new Callback() {
+        FormBody formBody = null;
+        if (this.chatMessageList != null && this.chatMessageList.size() != 0) {
+            formBody = new FormBody.Builder()
+                    .add("chatId", "" + chatVO.getId())
+                    .add("chatMessageId", "" + chatMessageList.get(0).getId())
+                    .add("pageSize", "" + PER_PAGE_COUNT)
+                    .build();
+        } else {
+            formBody = new FormBody.Builder()
+                    .add("chatId", "" + chatVO.getId())
+                    .add("pageSize", "" + PER_PAGE_COUNT)
+                    .build();
+        }
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/chatMessage/userFindBeforePage.do", null, formBody, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 ChattingActivity.this.runOnUiThread(()->{
@@ -372,38 +378,98 @@ public class ChattingActivity extends BaseActivity {
                     Collections.sort(chatMessageList, (o1, o2) -> o1.getSentTime().compareTo(o2.getSentTime()));
                 }
                 Log.i("ChatMessage", chatMessageList + "");
-                // 访问第一页，或者追加
-                if (ChattingActivity.this.nextPageIndex == 1) {
+                // 判断是否有更早的聊天记录
+                if (chatMessageList == null || chatMessageList.size() < ChattingActivity.PER_PAGE_COUNT) {
+                    // 没有更之前的聊天记录
+                    ChattingActivity.this.hasBeforePageChatMessage = false;
+                } else {
+                    ChattingActivity.this.hasBeforePageChatMessage = true;
+                }
+                // 更新聊天记录
+                if (chatMessageList != null && chatMessageList.size() != 0) {
+                    chatMessageList.addAll(ChattingActivity.this.chatMessageList);
                     ChattingActivity.this.chatMessageList = chatMessageList;
-                } else if (chatMessageList != null) {
-                    ChattingActivity.this.chatMessageList.addAll(0, chatMessageList);
                 }
-                // 判断是否有下一页
-                boolean hasNextPage = true;
-                if (chatMessageList == null || chatMessageList.size() < PER_PAGE_COUNT) {
-                    hasNextPage = false;
-                }
-                boolean finalHasNextPage = hasNextPage;
                 ChattingActivity.this.runOnUiThread(()->{
-                    if (ChattingActivity.this.nextPageIndex == 1) {
-                        // 访问第一页(上拉)，也可能是刷新
-                        ChattingActivity.this.chatMessageSmartRefreshLayout.finishLoadmore();
-                        ChattingActivity.this.chatMessageSmartRefreshLayout.setEnableRefresh(true);
-                    } else {
-                        ChattingActivity.this.chatMessageSmartRefreshLayout.finishRefresh();
-                    }
-                    // 根据是否有下一页，修改nextPageIndex
-                    if (finalHasNextPage) {
-                        ChattingActivity.this.nextPageIndex += 1;
-                    } else {
-                        ChattingActivity.this.nextPageIndex = 0;
-                    }
-                    ChattingActivity.this.chatMessageSmartRefreshLayout.setEnableRefresh(finalHasNextPage);
+                    ChattingActivity.this.chatMessageSmartRefreshLayout.finishRefresh();
+                    ChattingActivity.this.chatMessageSmartRefreshLayout.setEnableRefresh(ChattingActivity.this.hasBeforePageChatMessage);
                     // update
                     ChattingActivity.this.chatMessageRecycleAdapter.updateData(ChattingActivity.this.chatMessageList);
-                    if (ChattingActivity.this.chatMessageList != null && ChattingActivity.this.chatMessageList.size() <= PER_PAGE_COUNT) {
-                        // 加载第1页数据（上拉），自动滚动到底部
+                });
+            }
+        });
+    }
+
+    /**
+     * 获取下一页ChatMessage
+     */
+    private void getAfterPageChatMessageFromServer() {
+        if (chatVO == null) {
+            return;
+        }
+        FormBody formBody = null;
+        if (this.chatMessageList != null && this.chatMessageList.size() != 0) {
+            formBody = new FormBody.Builder()
+                    .add("chatId", "" + chatVO.getId())
+                    .add("chatMessageId", "" + chatMessageList.get(chatMessageList.size() - 1).getId())
+                    .add("pageSize", "" + PER_PAGE_COUNT)
+                    .build();
+        } else {
+            formBody = new FormBody.Builder()
+                    .add("chatId", "" + chatVO.getId())
+                    .add("pageSize", "" + PER_PAGE_COUNT)
+                    .build();
+        }
+        OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/chatMessage/userFindAfterPage.do", null, formBody, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                ChattingActivity.this.runOnUiThread(()->{
+                    Toast.makeText(ChattingActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseString = response.body().string();
+                // 转json
+                Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
+                Type type =  new TypeToken<ResponseResult<List<ChatMessage>>>(){}.getType();
+                final ResponseResult<List<ChatMessage>> responseResult = gson.fromJson(responseString, type);
+                if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
+                    // 获取数据失败
+                    ChattingActivity.this.runOnUiThread(()->{
+                        Toast.makeText(ChattingActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
+                List<ChatMessage> chatMessageList = responseResult.getData();
+                if (chatMessageList != null) {
+                    // 按照sentTime升序
+                    Collections.sort(chatMessageList, (o1, o2) -> o1.getSentTime().compareTo(o2.getSentTime()));
+                }
+                Log.i("ChatMessage", chatMessageList + "");
+                // 更新聊天记录
+                boolean hasMoreChatMessage = false;
+                if (chatMessageList != null && chatMessageList.size() != 0) {
+                    ChattingActivity.this.chatMessageList.addAll(chatMessageList);
+                    // 判断是否有更多的未读消息
+                    if (chatMessageList.size() == ChattingActivity.PER_PAGE_COUNT) {
+                        hasMoreChatMessage = true;
+                    }
+                }
+                boolean finalHasMoreChatMessage = hasMoreChatMessage;
+                ChattingActivity.this.runOnUiThread(()->{
+                    // update
+                    ChattingActivity.this.chatMessageRecycleAdapter.updateData(ChattingActivity.this.chatMessageList);
+                    if (ChattingActivity.this.chatMessageRecycleAdapter.getItemCount() > 0) {
+                        // 滚动到底部
                         ChattingActivity.this.chatMessageRecyclerView.scrollToPosition(ChattingActivity.this.chatMessageRecycleAdapter.getItemCount() - 1);
+                    }
+                    if (!finalHasMoreChatMessage) {
+                        ChattingActivity.this.chatMessageSmartRefreshLayout.finishLoadmore();
+                    } else {
+                        // 递归调用
+                        ChattingActivity.this.getAfterPageChatMessageFromServer();
                     }
                 });
             }
@@ -496,7 +562,7 @@ public class ChattingActivity extends BaseActivity {
                 return;
             }
             Integer userId = LoginUserInfoUtil.getLoginUser().getId();
-            if (chatMessage.getFromAccountId().equals(userId) && (chatMessage.getChatType().equals(Chat.CHAT_TYPE_USER_TO_USER) || chatMessage.getChatType().equals(Chat.CHAT_TYPE_USER_TO_MANAGER))) {
+            if (chatMessage.getFromAccountId().equals(userId) && (chatMessage.getMessageType().equals(ChatMessage.MESSAGE_TYPE_USER_TO_USER) || chatMessage.getMessageType().equals(ChatMessage.MESSAGE_TYPE_USER_TO_MANAGER))) {
                 // 我发给对方的消息
                 holder.leftConstraintLayout.setVisibility(View.GONE);
                 holder.rightConstraintLayout.setVisibility(View.VISIBLE);

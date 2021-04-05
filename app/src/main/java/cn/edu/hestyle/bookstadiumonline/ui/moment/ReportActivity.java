@@ -1,4 +1,4 @@
-package cn.edu.hestyle.bookstadiumonline.ui.message;
+package cn.edu.hestyle.bookstadiumonline.ui.moment;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -34,7 +34,7 @@ import java.util.List;
 
 import cn.edu.hestyle.bookstadiumonline.BaseActivity;
 import cn.edu.hestyle.bookstadiumonline.R;
-import cn.edu.hestyle.bookstadiumonline.entity.Complaint;
+import cn.edu.hestyle.bookstadiumonline.entity.Report;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
@@ -43,13 +43,13 @@ import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.Response;
 
-public class ComplaintActivity extends BaseActivity {
+public class ReportActivity extends BaseActivity {
     protected static final Integer RESULT_CAMERA_IMAGE = 1;
     protected static final Integer RESULT_LOAD_IMAGE = 2;
-    /** 投诉title的最大长度 */
-    private static final Integer COMPLAINANT_TITLE_MAX_LENGTH = 50;
-    /** 投诉description的最大长度 */
-    private static final Integer COMPLAINANT_DESCRIPTION_MAX_LENGTH = 500;
+    /** 举报title的最大长度 */
+    private static final Integer REPORT_TITLE_MAX_LENGTH = 50;
+    /** 举报description的最大长度 */
+    private static final Integer REPORT_DESCRIPTION_MAX_LENGTH = 500;
     protected EditText titleEditText;
     protected EditText descriptionEditText;
     private ImageView oneImageView;
@@ -61,31 +61,31 @@ public class ComplaintActivity extends BaseActivity {
     protected Button saveButton;
 
     protected String uploadingFilePath;
-    protected List<String> complaintImagePathList;
+    protected List<String> reportImagePathList;
 
-    private Integer respondentAccountType;
-    private Integer respondentAccountId;
+    private Integer reportContentType;
+    private Integer reportContentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_complaint);
-        this.navigationBarInit("投诉用户");
+        setContentView(R.layout.activity_report);
+        this.navigationBarInit("举报");
 
         Intent intent = getIntent();
-        respondentAccountType = intent.getIntExtra("respondentAccountType", -1);
-        if (respondentAccountType == -1) {
+        reportContentType = intent.getIntExtra("reportContentType", -1);
+        if (reportContentType == -1) {
             Toast.makeText(this, "程序内部发生数据传递错误！", Toast.LENGTH_SHORT).show();
             finish();
         }
-        respondentAccountId = intent.getIntExtra("respondentAccountId", -1);
-        if (respondentAccountId == -1) {
+        reportContentId = intent.getIntExtra("reportContentId", -1);
+        if (reportContentId == -1) {
             Toast.makeText(this, "程序内部发生数据传递错误！", Toast.LENGTH_SHORT).show();
             finish();
         }
 
         this.uploadingFilePath = null;
-        this.complaintImagePathList = new ArrayList<>();
+        this.reportImagePathList = new ArrayList<>();
 
         titleEditText = findViewById(R.id.titleEditText);
         descriptionEditText = findViewById(R.id.descriptionEditText);
@@ -106,39 +106,39 @@ public class ComplaintActivity extends BaseActivity {
 
         // 上传第一张图片
         oneImageView.setOnClickListener(v -> {
-            ComplaintActivity.this.showUploadImagePopueWindow();
+            ReportActivity.this.showUploadImagePopueWindow();
         });
         // 删除第一张图片
         oneImageDeleteImageView.setOnClickListener(v -> {
-            ComplaintActivity.this.removeImage(0);
+            ReportActivity.this.removeImage(0);
         });
         // 上传第二张图片
         twoImageView.setOnClickListener(v -> {
-            ComplaintActivity.this.showUploadImagePopueWindow();
+            ReportActivity.this.showUploadImagePopueWindow();
         });
         // 删除第二张图片
         twoImageDeleteImageView.setOnClickListener(v -> {
-            ComplaintActivity.this.removeImage(1);
+            ReportActivity.this.removeImage(1);
         });
         // 上传第三张图片
         threeImageView.setOnClickListener(v -> {
-            ComplaintActivity.this.showUploadImagePopueWindow();
+            ReportActivity.this.showUploadImagePopueWindow();
         });
         // 删除第三张图片
         threeImageDeleteImageView.setOnClickListener(v -> {
-            ComplaintActivity.this.removeImage(2);
+            ReportActivity.this.removeImage(2);
         });
 
         saveButton = findViewById(R.id.saveButton);
         saveButton.setOnClickListener(v -> {
-            FormBody formBody = ComplaintActivity.this.checkForm();
+            FormBody formBody = ReportActivity.this.checkForm();
             if (formBody != null) {
                 // 提交评论
-                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/complaint/userComplain.do", null, formBody, new Callback() {
+                OkHttpUtil.post(ServerSettingActivity.getServerBaseUrl() + "/report/userReport.do", null, formBody, new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        ComplaintActivity.this.runOnUiThread(()->{
-                            Toast.makeText(ComplaintActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                        ReportActivity.this.runOnUiThread(()->{
+                            Toast.makeText(ReportActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
                         });
                     }
 
@@ -149,18 +149,18 @@ public class ComplaintActivity extends BaseActivity {
                         Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
                         Type type =  new TypeToken<ResponseResult<Void>>(){}.getType();
                         final ResponseResult<Void> responseResult = gson.fromJson(responseString, type);
-                        ComplaintActivity.this.runOnUiThread(()->{
-                            Toast.makeText(ComplaintActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                        ReportActivity.this.runOnUiThread(()->{
+                            Toast.makeText(ReportActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
                         });
                         if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
                             // 保存成功，则返回
-                            ComplaintActivity.this.finish();
+                            ReportActivity.this.finish();
                         }
                     }
                 });
             }
         });
-        Toast.makeText(this, "请勿恶意投诉，或者随意填写信息，否则系统将对您的账号进行处罚！", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "请勿恶意举报，或者随意填写信息，否则系统将对您的账号进行处罚！", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -175,12 +175,12 @@ public class ComplaintActivity extends BaseActivity {
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 uploadingFilePath = cursor.getString(columnIndex);
                 cursor.close();
-                Log.i("Complaint", "已选中图片 imagePath = " + uploadingFilePath);
+                Log.i("Report", "已选中图片 imagePath = " + uploadingFilePath);
                 // 上传图片
                 File imageFile = new File(uploadingFilePath);
                 uploadImageToServer(imageFile);
             } else if (requestCode == RESULT_CAMERA_IMAGE){
-                Log.i("Complaint", "已选中(拍照)图片 imagePath = " + uploadingFilePath);
+                Log.i("Report", "已选中(拍照)图片 imagePath = " + uploadingFilePath);
                 // 上传图片
                 File imageFile = new File(uploadingFilePath);
                 uploadImageToServer(imageFile);
@@ -190,20 +190,20 @@ public class ComplaintActivity extends BaseActivity {
 
     /**
      * 删除照片
-     * @param index     complaintImagePathList下标
+     * @param index     reportImagePathList下标
      */
     protected void removeImage(int index) {
-        if (complaintImagePathList.size() > index) {
-            complaintImagePathList.remove(index);
+        if (reportImagePathList.size() > index) {
+            reportImagePathList.remove(index);
         }
         // 第三张图片的位置
-        if (complaintImagePathList.size() > 2) {
-            Glide.with(ComplaintActivity.this)
-                    .load(ServerSettingActivity.getServerHostUrl() + complaintImagePathList.get(2))
+        if (reportImagePathList.size() > 2) {
+            Glide.with(ReportActivity.this)
+                    .load(ServerSettingActivity.getServerHostUrl() + reportImagePathList.get(2))
                     .into(threeImageView);
             threeImageView.setVisibility(View.VISIBLE);
             threeImageDeleteImageView.setVisibility(View.VISIBLE);
-        } else if (complaintImagePathList.size() == 2) {
+        } else if (reportImagePathList.size() == 2) {
             // 显示上传flag
             threeImageView.setImageResource(R.drawable.ic_upload_image);
             threeImageView.setVisibility(View.VISIBLE);
@@ -214,13 +214,13 @@ public class ComplaintActivity extends BaseActivity {
             threeImageDeleteImageView.setVisibility(View.INVISIBLE);
         }
         // 第二张图片的位置
-        if (complaintImagePathList.size() > 1) {
-            Glide.with(ComplaintActivity.this)
-                    .load(ServerSettingActivity.getServerHostUrl() + complaintImagePathList.get(1))
+        if (reportImagePathList.size() > 1) {
+            Glide.with(ReportActivity.this)
+                    .load(ServerSettingActivity.getServerHostUrl() + reportImagePathList.get(1))
                     .into(twoImageView);
             twoImageView.setVisibility(View.VISIBLE);
             twoImageDeleteImageView.setVisibility(View.VISIBLE);
-        } else if (complaintImagePathList.size() == 1) {
+        } else if (reportImagePathList.size() == 1) {
             // 显示上传flag
             twoImageView.setImageResource(R.drawable.ic_upload_image);
             twoImageView.setVisibility(View.VISIBLE);
@@ -231,9 +231,9 @@ public class ComplaintActivity extends BaseActivity {
             twoImageDeleteImageView.setVisibility(View.INVISIBLE);
         }
         // 第一张图片的位置
-        if (complaintImagePathList.size() > 0) {
-            Glide.with(ComplaintActivity.this)
-                    .load(ServerSettingActivity.getServerHostUrl() + complaintImagePathList.get(0))
+        if (reportImagePathList.size() > 0) {
+            Glide.with(ReportActivity.this)
+                    .load(ServerSettingActivity.getServerHostUrl() + reportImagePathList.get(0))
                     .into(oneImageView);
             oneImageDeleteImageView.setVisibility(View.VISIBLE);
         } else {
@@ -249,15 +249,15 @@ public class ComplaintActivity extends BaseActivity {
      * @param imagePath     imagePath
      */
     protected void uploadImage(String imagePath) {
-        if (complaintImagePathList.size() == 2) {
+        if (reportImagePathList.size() == 2) {
             // 将上传的图片显示至threeImageView
-            Glide.with(ComplaintActivity.this)
+            Glide.with(ReportActivity.this)
                     .load(ServerSettingActivity.getServerHostUrl() + imagePath)
                     .into(threeImageView);
             threeImageDeleteImageView.setVisibility(View.VISIBLE);
-        } else if (complaintImagePathList.size() == 1) {
+        } else if (reportImagePathList.size() == 1) {
             // 将上传的图片显示至twoImageView
-            Glide.with(ComplaintActivity.this)
+            Glide.with(ReportActivity.this)
                     .load(ServerSettingActivity.getServerHostUrl() + imagePath)
                     .into(twoImageView);
             twoImageDeleteImageView.setVisibility(View.VISIBLE);
@@ -265,9 +265,9 @@ public class ComplaintActivity extends BaseActivity {
             threeImageView.setImageResource(R.drawable.ic_upload_image);
             threeImageView.setVisibility(View.VISIBLE);
             threeImageDeleteImageView.setVisibility(View.INVISIBLE);
-        } else if (complaintImagePathList.size() == 0) {
+        } else if (reportImagePathList.size() == 0) {
             // 将上传的图片显示至oneImageView
-            Glide.with(ComplaintActivity.this)
+            Glide.with(ReportActivity.this)
                     .load(ServerSettingActivity.getServerHostUrl() + imagePath)
                     .into(oneImageView);
             oneImageDeleteImageView.setVisibility(View.VISIBLE);
@@ -276,7 +276,7 @@ public class ComplaintActivity extends BaseActivity {
             twoImageView.setVisibility(View.VISIBLE);
             twoImageDeleteImageView.setVisibility(View.INVISIBLE);
         }
-        complaintImagePathList.add(imagePath);
+        reportImagePathList.add(imagePath);
     }
 
     /**
@@ -284,11 +284,11 @@ public class ComplaintActivity extends BaseActivity {
      * @param imageFile     待上传图片文件
      */
     protected void uploadImageToServer(File imageFile) {
-        OkHttpUtil.uploadFile(ServerSettingActivity.getServerBaseUrl() + "/complaint/uploadImage.do", imageFile, OkHttpUtil.MEDIA_TYPE_JPG, new Callback() {
+        OkHttpUtil.uploadFile(ServerSettingActivity.getServerBaseUrl() + "/report/uploadImage.do", imageFile, OkHttpUtil.MEDIA_TYPE_JPG, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                ComplaintActivity.this.runOnUiThread(()->{
-                    Toast.makeText(ComplaintActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
+                ReportActivity.this.runOnUiThread(()->{
+                    Toast.makeText(ReportActivity.this, "网络访问失败！", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -300,15 +300,15 @@ public class ComplaintActivity extends BaseActivity {
                 Type type =  new TypeToken<ResponseResult<String>>(){}.getType();
                 final ResponseResult<String> responseResult = gson.fromJson(responseString, type);
                 if (!responseResult.getCode().equals(ResponseResult.SUCCESS)) {
-                    ComplaintActivity.this.runOnUiThread(()->{
-                        Toast.makeText(ComplaintActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
+                    ReportActivity.this.runOnUiThread(()->{
+                        Toast.makeText(ReportActivity.this, responseResult.getMessage(), Toast.LENGTH_SHORT).show();
                     });
                     return;
                 }
                 String imagePath = responseResult.getData();
-                Log.i("ComplaintActivity", "文件上传成功！imagePath = " + responseResult.getData() + "");
-                ComplaintActivity.this.runOnUiThread(()->{
-                    ComplaintActivity.this.uploadImage(imagePath);
+                Log.i("ReportActivity", "文件上传成功！imagePath = " + responseResult.getData() + "");
+                ReportActivity.this.runOnUiThread(()->{
+                    ReportActivity.this.uploadImage(imagePath);
                 });
             }
         });
@@ -322,42 +322,42 @@ public class ComplaintActivity extends BaseActivity {
         // 检查title
         String title = titleEditText.getText().toString();
         if (title.length() == 0) {
-            Toast.makeText(this, "请输入投诉标题！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "请输入倨傲标题！", Toast.LENGTH_SHORT).show();
             return null;
         }
-        if (title.length() > COMPLAINANT_TITLE_MAX_LENGTH) {
-            Toast.makeText(this, "投诉标题超过了 " + COMPLAINANT_TITLE_MAX_LENGTH + " 个字符！", Toast.LENGTH_SHORT).show();
+        if (title.length() > REPORT_TITLE_MAX_LENGTH) {
+            Toast.makeText(this, "举报标题超过了 " + REPORT_TITLE_MAX_LENGTH + " 个字符！", Toast.LENGTH_SHORT).show();
             return null;
         }
         // 检查description
         String description = descriptionEditText.getText().toString();
         if (description.length() == 0) {
-            Toast.makeText(this, "请输入投诉描述！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "请输入举报描述！", Toast.LENGTH_SHORT).show();
             return null;
         }
-        if (description.length() > COMPLAINANT_DESCRIPTION_MAX_LENGTH) {
-            Toast.makeText(this, "投诉描述超过了 " + COMPLAINANT_DESCRIPTION_MAX_LENGTH + " 个字符！", Toast.LENGTH_SHORT).show();
+        if (description.length() > REPORT_DESCRIPTION_MAX_LENGTH) {
+            Toast.makeText(this, "举报描述超过了 " + REPORT_DESCRIPTION_MAX_LENGTH + " 个字符！", Toast.LENGTH_SHORT).show();
             return null;
         }
         // 检查imagePaths
         StringBuilder imagePaths = new StringBuilder();
-        for (String imagePath : complaintImagePathList) {
+        for (String imagePath : reportImagePathList) {
             if (imagePaths.length() != 0) {
                 imagePaths.append(",");
             }
             imagePaths.append(imagePath);
         }
-        Complaint complaint = new Complaint();
-        complaint.setRespondentAccountType(respondentAccountType);
-        complaint.setRespondentAccountId(respondentAccountId);
-        complaint.setTitle(title);
-        complaint.setDescription(description);
-        complaint.setImagePaths(imagePaths.toString());
+        Report report = new Report();
+        report.setReportContentType(reportContentType);
+        report.setReportContentId(reportContentId);
+        report.setTitle(title);
+        report.setDescription(description);
+        report.setImagePaths(imagePaths.toString());
         // 转json
         Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
-        String complaintData = gson.toJson(complaint);
+        String reportData = gson.toJson(report);
         return new FormBody.Builder()
-                .add("complaintData", complaintData)
+                .add("reportData", reportData)
                 .build();
     }
 
