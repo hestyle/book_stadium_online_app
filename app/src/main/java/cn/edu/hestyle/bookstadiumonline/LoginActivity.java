@@ -22,6 +22,7 @@ import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
+import cn.edu.hestyle.bookstadiumonline.util.WebSocketHandler;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -66,6 +67,11 @@ public class LoginActivity extends BaseActivity {
                         if (responseResult.getCode().equals(ResponseResult.SUCCESS)) {
                             // 登录成功
                             LoginUserInfoUtil.update(responseResult.getData());
+                            String token = LoginUserInfoUtil.getToken();
+                            if (token != null && token.length() != 0) {
+                                // 连接websocket
+                                WebSocketHandler.getInstance(ServerSettingActivity.getServerBaseUrl() + "/webSocket/" + token);
+                            }
                             LoginActivity.this.finish();
                         }
                     });

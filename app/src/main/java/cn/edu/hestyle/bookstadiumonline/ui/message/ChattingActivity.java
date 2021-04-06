@@ -1,7 +1,10 @@
 package cn.edu.hestyle.bookstadiumonline.ui.message;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,6 +48,7 @@ import cn.edu.hestyle.bookstadiumonline.entity.ChatMessage;
 import cn.edu.hestyle.bookstadiumonline.entity.ChatVO;
 import cn.edu.hestyle.bookstadiumonline.entity.Complaint;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.BroadcastUtil;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
@@ -73,6 +77,7 @@ public class ChattingActivity extends BaseActivity {
     private View bottomView;
     private EditText chatMessageEditText;
     private Button sendButton;
+    private ChatMessageBroadcastReceiver chatMessageBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +146,11 @@ public class ChattingActivity extends BaseActivity {
         chatMessageEditText = findViewById(R.id.chatMessageEditText);
         sendButton = findViewById(R.id.sendButton);
         sendButton.setOnClickListener(v -> ChattingActivity.this.sendChatMessage());
+        // 注册广播
+        chatMessageBroadcastReceiver = new ChatMessageBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BroadcastUtil.RECEIVED_CHAT_MESSAGE);
+        registerReceiver(chatMessageBroadcastReceiver, intentFilter);
     }
 
     @Override
@@ -150,6 +160,13 @@ public class ChattingActivity extends BaseActivity {
             Toast.makeText(this, "请先进行登录！", Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // activity销毁时，注销广播
+        unregisterReceiver(chatMessageBroadcastReceiver);
     }
 
     /**
@@ -652,6 +669,29 @@ public class ChattingActivity extends BaseActivity {
                 } else {
                     sendTimeTextView.setVisibility(View.GONE);
                 }
+            }
+        }
+    }
+
+    /**
+     * ChatMessageBroadcast Receiver
+     */
+    class ChatMessageBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // 读取Broadcast中的ChatMessage
+            ChatMessage chatMessage = (ChatMessage) intent.getSerializableExtra(ChatMessage.BROAD_CAST_KEY);
+            if (chatMessage != null && chatVO != null && chatMessage.getChatId().equals(chatVO.getId())) {
+                // ChatMessage属于当前聊天窗口
+                if (ChattingActivity.this.chatMessageList != null) {
+                    ChattingActivity.this.chatMessageList.add(chatMessage);
+                    ChattingActivity.this.chatMessageRecycleAdapter.notifyItemInserted(ChattingActivity.this.chatMessageList.size() - 1);
+                } else {
+                    ChattingActivity.this.chatMessageList = new ArrayList<>();
+                    ChattingActivity.this.chatMessageList.add(chatMessage);
+                    ChattingActivity.this.chatMessageRecycleAdapter.updateData(ChattingActivity.this.chatMessageList);
+                }
+                ChattingActivity.this.chatMessageRecyclerView.scrollToPosition(ChattingActivity.this.chatMessageRecycleAdapter.getItemCount() - 1);
             }
         }
     }

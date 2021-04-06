@@ -1,6 +1,9 @@
 package cn.edu.hestyle.bookstadiumonline.ui.message;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +40,7 @@ import cn.edu.hestyle.bookstadiumonline.adapter.ChatVORecycleAdapter;
 import cn.edu.hestyle.bookstadiumonline.entity.ChatVO;
 import cn.edu.hestyle.bookstadiumonline.ui.my.SystemNoticeListActivity;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.BroadcastUtil;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
@@ -56,6 +60,7 @@ public class MessageFragment extends Fragment {
     private SmartRefreshLayout chatVOSmartRefreshLayout;
     private RecyclerView chatVORecyclerView;
     private ChatVORecycleAdapter chatVORecycleAdapter;
+    private ChatMessageBroadcastReceiver chatMessageBroadcastReceiver;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -90,7 +95,11 @@ public class MessageFragment extends Fragment {
         chatVORecyclerView.setAdapter(chatVORecycleAdapter);
         // 添加分割线
         chatVORecyclerView.addItemDecoration(new DividerItemDecoration(this.getContext(), DividerItemDecoration.VERTICAL));
-
+        // 注册广播
+        chatMessageBroadcastReceiver = new ChatMessageBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BroadcastUtil.RECEIVED_CHAT_MESSAGE);
+        this.getActivity().registerReceiver(chatMessageBroadcastReceiver, intentFilter);
         return rootView;
     }
 
@@ -107,6 +116,13 @@ public class MessageFragment extends Fragment {
             this.tipsTextView.setVisibility(View.VISIBLE);
             this.chatVOSmartRefreshLayout.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // activity销毁时，注销广播
+        this.getActivity().unregisterReceiver(chatMessageBroadcastReceiver);
     }
 
     /**
@@ -213,5 +229,17 @@ public class MessageFragment extends Fragment {
         });
         // 添加到common_title
         commonTitleConstraintLayout.addView(rightAnnouncementImageButton);
+    }
+
+    /**
+     * ChatMessageBroadcast Receiver
+     */
+    class ChatMessageBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // 刷新chatVO列表
+            MessageFragment.this.nextPageIndex = 1;
+            MessageFragment.this.getNextPageChatVOFromServer();
+        }
     }
 }
