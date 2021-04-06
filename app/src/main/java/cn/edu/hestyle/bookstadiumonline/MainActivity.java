@@ -85,6 +85,16 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        String token = LoginUserInfoUtil.getToken();
+        if (token != null && token.length() != 0) {
+            // 关闭websocket
+            WebSocketHandler.getInstance(ServerSettingActivity.getServerBaseUrl() + "/webSocket/" + token).close();
+        }
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus && !MainActivity.hasShowedAnnouncement) {

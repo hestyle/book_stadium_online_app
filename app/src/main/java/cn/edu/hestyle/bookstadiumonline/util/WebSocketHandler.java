@@ -1,5 +1,6 @@
 package cn.edu.hestyle.bookstadiumonline.util;
 
+import android.media.MediaPlayer;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -9,6 +10,7 @@ import com.google.gson.GsonBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
+import cn.edu.hestyle.bookstadiumonline.R;
 import cn.edu.hestyle.bookstadiumonline.entity.ChatMessage;
 import cn.edu.hestyle.bookstadiumonline.entity.WebSocketMessage;
 import okhttp3.OkHttpClient;
@@ -107,6 +109,10 @@ public class WebSocketHandler extends WebSocketListener {
             Gson gson = new GsonBuilder().setDateFormat(ResponseResult.DATETIME_FORMAT).create();
             WebSocketMessage webSocketMessage = gson.fromJson(text, WebSocketMessage.class);
             if (WebSocketMessage.WEBSOCKET_MESSAGE_TYPE_CHAT_MESSAGE.equals(webSocketMessage.getMessageType())) {
+                // 播放音频
+                MediaPlayer mediaPlayer = MediaPlayer.create(ApplicationContextUtil.getApplicationContext(), R.raw.received_message);
+                mediaPlayer.setLooping(false);
+                mediaPlayer.start();
                 // 收到了ChatMessage消息
                 ChatMessage chatMessage = gson.fromJson(webSocketMessage.getContent(), ChatMessage.class);
                 if (chatMessage != null) {
