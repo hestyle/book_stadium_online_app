@@ -10,6 +10,8 @@ public class ChatMessage implements Serializable {
     public static final Integer MESSAGE_TYPE_USER_TO_USER = 0;
     public static final Integer MESSAGE_TYPE_USER_TO_MANAGER = 1;
     public static final Integer MESSAGE_TYPE_MANAGER_TO_USER = 2;
+    /** 收到ChatMessage通知时的key */
+    public static final String BROAD_CAST_KEY = "ChatMessage";
 
     /** id */
     private Integer id;

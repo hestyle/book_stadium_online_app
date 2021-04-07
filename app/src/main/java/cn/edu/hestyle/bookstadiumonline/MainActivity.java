@@ -28,9 +28,11 @@ import java.lang.reflect.Type;
 
 import cn.edu.hestyle.bookstadiumonline.entity.Announcement;
 import cn.edu.hestyle.bookstadiumonline.ui.my.setting.ServerSettingActivity;
+import cn.edu.hestyle.bookstadiumonline.util.ApplicationContextUtil;
 import cn.edu.hestyle.bookstadiumonline.util.LoginUserInfoUtil;
 import cn.edu.hestyle.bookstadiumonline.util.OkHttpUtil;
 import cn.edu.hestyle.bookstadiumonline.util.ResponseResult;
+import cn.edu.hestyle.bookstadiumonline.util.WebSocketHandler;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -49,6 +51,8 @@ public class MainActivity extends BaseActivity {
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
         setContentView(R.layout.activity_main);
+        // 保存ApplicationContext
+        ApplicationContextUtil.setApplicationContext(this.getApplicationContext());
         // 判断是否设置了LocalServerSetting
         if (!ServerSettingActivity.isSavedServerSetting(getApplicationContext())) {
             Toast.makeText(MainActivity.this, "请先设置服务器ip地址与端口，否则无法访问！", Toast.LENGTH_LONG).show();
@@ -73,6 +77,21 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        String token = LoginUserInfoUtil.getToken();
+        if (token != null && token.length() != 0) {
+            // 连接websocket
+            WebSocketHandler.getInstance(ServerSettingActivity.getServerBaseUrl() + "/webSocket/" + token);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        String token = LoginUserInfoUtil.getToken();
+        if (token != null && token.length() != 0) {
+            // 关闭websocket
+            WebSocketHandler.getInstance(ServerSettingActivity.getServerBaseUrl() + "/webSocket/" + token).close();
+        }
     }
 
     @Override
