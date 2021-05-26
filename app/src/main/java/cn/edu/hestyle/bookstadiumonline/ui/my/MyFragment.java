@@ -88,7 +88,14 @@ public class MyFragment extends Fragment {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
                 // 刷新(登录账号信息)
-                MyFragment.this.getInfo();
+                User loginUser = LoginUserInfoUtil.getLoginUser();
+                // 判断是否登录
+                if (loginUser != null) {
+                    MyFragment.this.getInfo();
+                } else {
+                    Toast.makeText(MyFragment.this.getContext(), "请先进行登录！", Toast.LENGTH_SHORT).show();
+                    MyFragment.this.myFragmentSmartRefreshLayout.finishRefresh();
+                }
             }
         });
 

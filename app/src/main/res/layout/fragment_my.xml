@@ -172,27 +172,27 @@
                     android:textColor="@color/black"
                     android:textSize="16sp"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
-            <!-- 我的评论 -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/myCommentConstraintLayout"
-                android:layout_width="match_parent"
-                android:layout_height="40dp">
+<!--            &lt;!&ndash; 我的评论 &ndash;&gt;-->
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:id="@+id/myCommentConstraintLayout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="40dp">-->
 
-                <TextView
-                    android:id="@+id/myCommentTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:drawableRight="@drawable/ic_detail_middle"
-                    android:text="我的评论"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+<!--                <TextView-->
+<!--                    android:id="@+id/myCommentTextView"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    android:layout_marginLeft="15dp"-->
+<!--                    android:layout_marginRight="15dp"-->
+<!--                    android:drawableRight="@drawable/ic_detail_middle"-->
+<!--                    android:text="我的评论"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="16sp"/>-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
             <!-- 运动常识 -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/sportKnowledgeConstraintLayout"

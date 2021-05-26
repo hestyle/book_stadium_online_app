@@ -404,7 +404,9 @@ public class ChattingActivity extends BaseActivity {
                 }
                 // 更新聊天记录
                 if (chatMessageList != null && chatMessageList.size() != 0) {
-                    chatMessageList.addAll(ChattingActivity.this.chatMessageList);
+                    if (ChattingActivity.this.chatMessageList != null) {
+                        chatMessageList.addAll(ChattingActivity.this.chatMessageList);
+                    }
                     ChattingActivity.this.chatMessageList = chatMessageList;
                 }
                 ChattingActivity.this.runOnUiThread(()->{

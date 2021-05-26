@@ -39,6 +39,11 @@ public class OkHttpUtil {
      * @param callback      回调
      */
     public static void post(String url, HashMap<String, String> headersMap, FormBody formBody, Callback callback) {
+        if (ServerSettingActivity.getServerIpAddress() == null) {
+            // 检查是否设置了服务器地址
+            Log.w("OkHttpUtil", "还未设置服务器地址！");
+            return;
+        }
         Request.Builder requestBuilder = new Request.Builder().url(url);
         if (headersMap != null && headersMap.size() != 0) {
             // 拼接附加请求头
